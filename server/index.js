@@ -22,7 +22,9 @@ db.serialize(() => {
     TeamName1 TEXT,
     TeamName2 TEXT,
     TeamColor1 TEXT,
+    TeamAccent1 TEXT,
     TeamColor2 TEXT,
+    TeamAccent2 TEXT,
     Tournament TEXT,
     BoardColor TEXT,
     Scores TEXT,
@@ -46,10 +48,10 @@ app.get('/api/scoreboard/:sqid', (req, res) => {
 
 // REST API: Create new scoreboard
 app.post('/api/scoreboard', (req, res) => {
-  const { TeamName1, TeamName2, TeamColor1, TeamColor2, Tournament, BoardColor, Scores, ActiveSet } = req.body;
+  const { TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet } = req.body;
   db.run(
-    'INSERT INTO scoreboards (TeamName1, TeamName2, TeamColor1, TeamColor2, Tournament, BoardColor, Scores, ActiveSet) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    [TeamName1, TeamName2, TeamColor1, TeamColor2, Tournament, BoardColor, Scores, ActiveSet],
+    'INSERT INTO scoreboards (TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
       const sqid = sqids.encode([this.lastID]);
@@ -62,10 +64,10 @@ app.post('/api/scoreboard', (req, res) => {
 app.put('/api/scoreboard/:sqid', (req, res) => {
   const id = sqids.decode(req.params.sqid)[0];
   if (!id) return res.status(404).json({ error: 'Invalid Sqid' });
-  const { TeamName1, TeamName2, TeamColor1, TeamColor2, Tournament, BoardColor, Scores, ActiveSet } = req.body;
+  const { TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet } = req.body;
   db.run(
-    'UPDATE scoreboards SET TeamName1=?, TeamName2=?, TeamColor1=?, TeamColor2=?, Tournament=?, BoardColor=?, Scores=?, ActiveSet=? WHERE ScoreboardId=?',
-    [TeamName1, TeamName2, TeamColor1, TeamColor2, Tournament, BoardColor, Scores, ActiveSet, id],
+    'UPDATE scoreboards SET TeamName1=?, TeamName2=?, TeamColor1=?, TeamAccent1=?, TeamColor2=?, TeamAccent2=?, Tournament=?, BoardColor=?, Scores=?, ActiveSet=? WHERE ScoreboardId=?',
+    [TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet, id],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ success: true });
@@ -82,8 +84,8 @@ io.on('connection', (socket) => {
   socket.on('UpdateScores', ({ sqid, scores }) => {
     io.to(sqid).emit('UpdateScores', scores);
   });
-  socket.on('UpdateTeamInfo', ({ sqid, team1, team1Color, team2, team2Color }) => {
-    io.to(sqid).emit('UpdateTeamInfo', { team1, team1Color, team2, team2Color });
+  socket.on('UpdateTeamInfo', ({ sqid, team1, team1Color, team1Accent, team2, team2Color, team2Accent }) => {
+    io.to(sqid).emit('UpdateTeamInfo', { team1, team1Color, team1Accent, team2, team2Color, team2Accent });
   });
   socket.on('UpdateDisplay', ({ sqid, tournament, boardColor }) => {
     io.to(sqid).emit('UpdateDisplay', { tournament, boardColor });

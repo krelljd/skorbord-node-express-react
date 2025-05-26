@@ -18,6 +18,10 @@ function AdminView() {
   const [editTeam1, setEditTeam1] = useState('');
   const [editTeam2, setEditTeam2] = useState('');
   const [editTournament, setEditTournament] = useState('');
+  const [editTeam1Color, setEditTeam1Color] = useState('#00adb5');
+  const [editTeam1Accent, setEditTeam1Accent] = useState('#007c85');
+  const [editTeam2Color, setEditTeam2Color] = useState('#ff6f3c');
+  const [editTeam2Accent, setEditTeam2Accent] = useState('#ffb26b');
   const [showEdit, setShowEdit] = useState(false);
   // Detect system color scheme (HOOKS MUST BE AT TOP)
   const [isDark, setIsDark] = useState(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -36,6 +40,10 @@ function AdminView() {
         setEditTeam1(data.TeamName1 || '');
         setEditTeam2(data.TeamName2 || '');
         setEditTournament(data.Tournament || '');
+        setEditTeam1Color(data.TeamColor1 || '#00adb5');
+        setEditTeam1Accent(data.TeamAccent1 || '#007c85');
+        setEditTeam2Color(data.TeamColor2 || '#ff6f3c');
+        setEditTeam2Accent(data.TeamAccent2 || '#ffb26b');
         setLoading(false);
       })
       .catch(() => {
@@ -87,6 +95,10 @@ function AdminView() {
       ...scoreboard,
       TeamName1: editTeam1,
       TeamName2: editTeam2,
+      TeamColor1: editTeam1Color,
+      TeamAccent1: editTeam1Accent,
+      TeamColor2: editTeam2Color,
+      TeamAccent2: editTeam2Accent,
       Tournament: editTournament
     };
     setScoreboard(updated);
@@ -98,9 +110,11 @@ function AdminView() {
     if (socket) socket.emit('UpdateTeamInfo', {
       sqid,
       team1: editTeam1,
+      team1Color: editTeam1Color,
+      team1Accent: editTeam1Accent,
       team2: editTeam2,
-      team1Color: scoreboard.TeamColor1,
-      team2Color: scoreboard.TeamColor2
+      team2Color: editTeam2Color,
+      team2Accent: editTeam2Accent
     });
     if (socket) socket.emit('UpdateDisplay', {
       sqid,
@@ -225,6 +239,16 @@ function AdminView() {
                 aria-label="Edit Team 1 Name"
                 style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
               />
+              <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                <label style={{ fontSize: 13, color: 'var(--team1)' }}>
+                  Main Color
+                  <input type="color" value={editTeam1Color} onChange={e => setEditTeam1Color(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Main Color" />
+                </label>
+                <label style={{ fontSize: 13, color: 'var(--team1)' }}>
+                  Accent
+                  <input type="color" value={editTeam1Accent} onChange={e => setEditTeam1Accent(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Accent Color" />
+                </label>
+              </div>
               <input
                 type="text"
                 value={editTeam2}
@@ -233,6 +257,16 @@ function AdminView() {
                 aria-label="Edit Team 2 Name"
                 style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team2)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
               />
+              <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                <label style={{ fontSize: 13, color: 'var(--team2)' }}>
+                  Main Color
+                  <input type="color" value={editTeam2Color} onChange={e => setEditTeam2Color(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Main Color" />
+                </label>
+                <label style={{ fontSize: 13, color: 'var(--team2)' }}>
+                  Accent
+                  <input type="color" value={editTeam2Accent} onChange={e => setEditTeam2Accent(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Accent Color" />
+                </label>
+              </div>
               <input
                 type="text"
                 value={editTournament}
@@ -289,17 +323,17 @@ function OverlayView() {
       }
     });
     s.on('UpdateTeamInfo', payload => {
-      // Accepts team name and color updates
       setScoreboard(sb => ({
         ...sb,
         TeamName1: payload.team1 ?? sb.TeamName1,
-        TeamName2: payload.team2 ?? sb.TeamName2,
         TeamColor1: payload.team1Color ?? sb.TeamColor1,
-        TeamColor2: payload.team2Color ?? sb.TeamColor2
+        TeamAccent1: payload.team1Accent ?? sb.TeamAccent1,
+        TeamName2: payload.team2 ?? sb.TeamName2,
+        TeamColor2: payload.team2Color ?? sb.TeamColor2,
+        TeamAccent2: payload.team2Accent ?? sb.TeamAccent2
       }));
     });
     s.on('UpdateDisplay', payload => {
-      // Accepts tournament and board color updates
       setScoreboard(sb => ({
         ...sb,
         Tournament: payload.tournament ?? sb.Tournament,
@@ -319,18 +353,20 @@ function OverlayView() {
   const boardStyle = {
     background: scoreboard.BoardColor || '#222831',
     '--team1': scoreboard.TeamColor1,
-    '--team2': scoreboard.TeamColor2
+    '--team1-accent': scoreboard.TeamAccent1,
+    '--team2': scoreboard.TeamColor2,
+    '--team2-accent': scoreboard.TeamAccent2
   };
   return (
     <div className="overlay-root">
       <div className="overlay-board" style={boardStyle}>
         <div className="overlay-row">
-          <div className="overlay-team overlay-team1">
-            <div className="overlay-color" style={{ background: scoreboard.TeamColor1 }} />
+          <div className="overlay-team overlay-team1" style={{ background: scoreboard.TeamColor1 }}>
+            <div className="overlay-color" style={{ background: scoreboard.TeamAccent1 }} />
             <span className="overlay-team-name">{scoreboard.TeamName1}</span>
           </div>
-          <div className="overlay-team overlay-team2">
-            <div className="overlay-color" style={{ background: scoreboard.TeamColor2 }} />
+          <div className="overlay-team overlay-team2" style={{ background: scoreboard.TeamColor2 }}>
+            <div className="overlay-color" style={{ background: scoreboard.TeamAccent2 }} />
             <span className="overlay-team-name">{scoreboard.TeamName2}</span>
           </div>
           {[0, 1, 2].map(setIdx => (
