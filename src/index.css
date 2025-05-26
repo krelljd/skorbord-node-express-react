@@ -1,0 +1,236 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Professional scorebug style for overlay scoreboard */
+.overlay-root {
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+.overlay-board {
+  margin: 0 0 12px 0;
+  padding: 0;
+  border-radius: 8px;
+  background: #222831;
+  min-width: 600px;
+  min-height: 64px;
+  width: 60vw;
+  max-width: 900px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+  border: 3px solid #00adb5;
+  overflow: hidden;
+}
+.overlay-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  min-height: 56px;
+}
+.overlay-team {
+  display: flex;
+  align-items: center;
+  background: #393e46;
+  flex: 2 1 0;
+  min-width: 0;
+  border-right: 2px solid #222831;
+  font-size: 1.18em;
+  height: 56px;
+  padding-left: 12px;
+  position: relative;
+}
+.overlay-team1 .overlay-color {
+  background: var(--team1, #00adb5);
+}
+.overlay-team2 .overlay-color {
+  background: var(--team2, #fff);
+}
+.overlay-color {
+  width: 6px;
+  height: 70%;
+  margin-right: 10px;
+  border-radius: 2px;
+}
+.overlay-team-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: 1.08em;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+.overlay-set {
+  flex: 1 1 0;
+  min-width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 2px solid #222831;
+  background: #393e46;
+  font-size: 1.5em;
+  color: #fff;
+  font-family: 'Oswald', 'Segoe UI', Arial, sans-serif;
+  position: relative;
+  height: 56px;
+  transition: background 0.2s, border 0.2s;
+}
+.overlay-set.active {
+  border: 2.5px solid #00adb5;
+  background: #00adb5;
+  color: #222831;
+  z-index: 1;
+}
+.overlay-score {
+  font-weight: 700;
+  font-size: 1.3em;
+  letter-spacing: 1px;
+  font-family: 'Oswald', 'Segoe UI', Arial, sans-serif;
+}
+.overlay-score-sep {
+  margin: 0 0.2em;
+  color: #fff;
+}
+.overlay-tournament {
+  text-align: center;
+  font-size: 1.05em;
+  color: #fff;
+  background: #00adb5;
+  padding: 3px 0 2px 0;
+  border-top: 2px solid #222831;
+  border-radius: 0 0 6px 6px;
+  letter-spacing: 0.04em;
+  font-family: 'Oswald', 'Segoe UI', Arial, sans-serif;
+  font-weight: 600;
+  text-shadow: 0 1px 2px #22283144;
+}
+@media (max-width: 900px) {
+  .overlay-board { min-width: 320px; width: 98vw; }
+  .overlay-set { min-width: 36px; font-size: 1.1em; }
+  .overlay-team-name { font-size: 0.95em; }
+}
+
+/* Admin view styles */
+.admin-view {
+  padding: 16px 8px 32px 8px;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #23272f;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px 0 #0002;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+.admin-view h2 {
+  font-size: 1.3em;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #00adb5;
+  letter-spacing: 0.01em;
+}
+.admin-view strong {
+  color: #00adb5;
+}
+.admin-view button {
+  background: #00adb5;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-view button:active {
+  background: #007c85;
+}
+.admin-view input, .admin-view select {
+  font-size: 1em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  margin: 0 4px;
+}
+@media (max-width: 700px) {
+  .admin-view {
+    padding: 8px 2px 24px 2px;
+    max-width: 98vw;
+    font-size: 0.98em;
+  }
+  .admin-view h2 {
+    font-size: 1.1em;
+  }
+}
