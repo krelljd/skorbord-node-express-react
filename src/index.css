@@ -144,13 +144,17 @@ button:focus-visible {
   font-family: 'Oswald', 'Segoe UI', Arial, sans-serif;
   position: relative;
   height: 56px;
-  transition: background 0.2s, border 0.2s;
+  transition: background 0.2s, border 0.2s, color 0.2s;
+  opacity: 0.5; /* Inactive by default */
+  filter: grayscale(0.3) brightness(0.85);
 }
 .overlay-set.active {
   border: 2.5px solid #00adb5;
   background: #00adb5;
   color: #222831;
   z-index: 1;
+  opacity: 1;
+  filter: none;
 }
 .overlay-score {
   font-weight: 700;
