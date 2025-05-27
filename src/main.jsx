@@ -150,22 +150,32 @@ function AdminView() {
       <div style={{ background: 'var(--card)', borderRadius: 18, boxShadow: '0 2px 12px #00adb522', padding: 20, marginTop: 24, marginBottom: 16 }}>
         <div style={{ marginTop: 18, marginBottom: 0 }}>
           {[0, 1, 2].map(setIdx => (
-            <div key={setIdx} style={{ border: scoreboard.ActiveSet === setIdx ? `2px solid var(--team1)` : '1px solid var(--border)', borderRadius: 14, background: scoreboard.ActiveSet === setIdx ? '#e0f7fa' : 'var(--card)', marginBottom: 18, padding: 14, boxShadow: scoreboard.ActiveSet === setIdx ? '0 2px 8px #00adb522' : 'none', transition: 'box-shadow 0.2s' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontWeight: 700, color: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--text)', fontSize: 16 }}>Set {setIdx + 1}</span>
+            <div key={setIdx} style={{
+              border: scoreboard.ActiveSet === setIdx ? `2px solid var(--team1)` : '1px solid var(--border)',
+              borderRadius: 14,
+              background: scoreboard.ActiveSet === setIdx ? '#e0f7fa' : 'var(--card)',
+              marginBottom: 18,
+              padding: 10, // reduced from 14
+              boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 3px #00adb511' : 'none', // less shadow
+              transition: 'box-shadow 0.2s',
+              minHeight: 0 // allow smaller
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontWeight: 600, color: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--text)', fontSize: 14 }}>Set {setIdx + 1}</span>
                 <button
                   style={{
                     background: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--border)',
                     color: scoreboard.ActiveSet === setIdx ? '#fff' : 'var(--text)',
                     border: 'none',
-                    borderRadius: 8,
-                    padding: '8px 24px',
-                    fontWeight: 600,
-                    marginLeft: 8,
+                    borderRadius: 6, // smaller radius
+                    padding: '4px 12px', // smaller button
+                    fontWeight: 500, // less bold
+                    marginLeft: 6,
                     cursor: 'pointer',
-                    fontSize: 17,
-                    boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 4px #00adb522' : 'none',
-                    transition: 'box-shadow 0.2s'
+                    fontSize: 13, // smaller font
+                    boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 2px #00adb511' : 'none',
+                    transition: 'box-shadow 0.2s',
+                    opacity: scoreboard.ActiveSet === setIdx ? 0.85 : 1 // less prominent
                   }}
                   onClick={() => updateActiveSet(setIdx)}
                   aria-label={`Set active set to ${setIdx + 1}`}
