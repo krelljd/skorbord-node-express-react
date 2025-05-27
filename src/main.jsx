@@ -374,17 +374,17 @@ function OverlayView() {
     <div className="overlay-root">
       <div className="overlay-board" style={boardStyle}>
         <div className="overlay-row">
-          <div className="overlay-team overlay-team1" style={{ background: '#23272b', display: 'flex', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 3 }}>
-              <div className="overlay-color" style={{ background: scoreboard.TeamColor1, border: `1.5px solid ${getContrastText(scoreboard.TeamColor1)}`, width: 14, height: '100%', margin: 0, borderRadius: 2 }} />
-              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent1 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent1) && scoreboard.TeamAccent1 !== '#000000') ? scoreboard.TeamAccent1 : scoreboard.TeamColor1, border: `1.5px solid ${getContrastText((scoreboard.TeamAccent1 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent1) && scoreboard.TeamAccent1 !== '#000000') ? scoreboard.TeamAccent1 : scoreboard.TeamColor1)}`, width: 10, height: '100%', margin: 0, borderRadius: 2 }} />
+          <div className="overlay-team overlay-team1" style={{ background: '#23272b', display: 'flex', alignItems: 'center', padding: 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 0 }}>
+              <div className="overlay-color" style={{ background: scoreboard.TeamColor1, border: 'none', width: 12, height: '100%', margin: 0, borderRadius: '2px 0 0 2px' }} />
+              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent1 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent1) && scoreboard.TeamAccent1 !== '#000000') ? scoreboard.TeamAccent1 : scoreboard.TeamColor1, border: 'none', width: 8, height: '100%', margin: 0, borderRadius: '0 2px 2px 0' }} />
             </div>
             <span className="overlay-team-name" style={{ color: getContrastText('#23272b') }}>{scoreboard.TeamName1}</span>
           </div>
-          <div className="overlay-team overlay-team2" style={{ background: '#23272b', display: 'flex', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 3 }}>
-              <div className="overlay-color" style={{ background: scoreboard.TeamColor2, border: `1.5px solid ${getContrastText(scoreboard.TeamColor2)}`, width: 14, height: '100%', margin: 0, borderRadius: 2 }} />
-              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent2 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent2) && scoreboard.TeamAccent2 !== '#000000') ? scoreboard.TeamAccent2 : scoreboard.TeamColor2, border: `1.5px solid ${getContrastText((scoreboard.TeamAccent2 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent2) && scoreboard.TeamAccent2 !== '#000000') ? scoreboard.TeamAccent2 : scoreboard.TeamColor2)}`, width: 10, height: '100%', margin: 0, borderRadius: 2 }} />
+          <div className="overlay-team overlay-team2" style={{ background: '#23272b', display: 'flex', alignItems: 'center', padding: 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 0 }}>
+              <div className="overlay-color" style={{ background: scoreboard.TeamColor2, border: 'none', width: 12, height: '100%', margin: 0, borderRadius: '2px 0 0 2px' }} />
+              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent2 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent2) && scoreboard.TeamAccent2 !== '#000000') ? scoreboard.TeamAccent2 : scoreboard.TeamColor2, border: 'none', width: 8, height: '100%', margin: 0, borderRadius: '0 2px 2px 0' }} />
             </div>
             <span className="overlay-team-name" style={{ color: getContrastText('#23272b') }}>{scoreboard.TeamName2}</span>
           </div>
