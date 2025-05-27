@@ -161,7 +161,7 @@ function AdminView() {
               minHeight: 0 // allow smaller
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontWeight: 600, color: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--text)', fontSize: 14 }}>Set {setIdx + 1}</span>
+                <span style={{ fontWeight: 600, color: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--text)', fontSize: '1em' }}>Set {setIdx + 1}</span>
                 <button
                   style={{
                     background: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--border)',
@@ -172,7 +172,7 @@ function AdminView() {
                     fontWeight: 500, // less bold
                     marginLeft: 6,
                     cursor: 'pointer',
-                    fontSize: 13, // smaller font
+                    fontSize: '0.95em', // relative font size
                     boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 2px #00adb511' : 'none',
                     transition: 'box-shadow 0.2s',
                     opacity: scoreboard.ActiveSet === setIdx ? 0.85 : 1 // less prominent
@@ -184,7 +184,7 @@ function AdminView() {
                 </button>
               </div>
               {/* Team 1 header */}
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--team1)', marginBottom: 2, textAlign: 'center' }}>{editTeam1}</div>
+              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team1)', marginBottom: 2, textAlign: 'center' }}>{editTeam1}</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, marginBottom: 14 }}>
                 <button
                   onClick={() => updateScore(setIdx, 0, -1)}
@@ -193,7 +193,7 @@ function AdminView() {
                 >
                   -
                 </button>
-                <span style={{ fontWeight: 700, fontSize: 38, color: 'var(--team1)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2]}</span>
+                <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team1)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2]}</span>
                 <button
                   onClick={() => updateScore(setIdx, 0, 1)}
                   style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team1)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #00adb522', transition: 'background 0.2s' }}
@@ -203,7 +203,7 @@ function AdminView() {
                 </button>
               </div>
               {/* Team 2 header */}
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--team2)', marginBottom: 2, textAlign: 'center' }}>{editTeam2}</div>
+              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team2)', marginBottom: 2, textAlign: 'center' }}>{editTeam2}</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
                 <button
                   onClick={() => updateScore(setIdx, 1, -1)}
@@ -212,7 +212,7 @@ function AdminView() {
                 >
                   -
                 </button>
-                <span style={{ fontWeight: 700, fontSize: 38, color: 'var(--team2)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2 + 1]}</span>
+                <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team2)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2 + 1]}</span>
                 <button
                   onClick={() => updateScore(setIdx, 1, 1)}
                   style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team2)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #ff6f3c22', transition: 'background 0.2s' }}
