@@ -393,7 +393,16 @@ function OverlayView() {
               key={setIdx}
               className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
               style={scoreboard.ActiveSet === setIdx
-                ? { border: '2.5px solid #00adb5', background: '#181c1f', color: '#fff', opacity: 1, filter: 'none' }
+                ? {
+                    borderLeft: '2.5px solid #00adb5',
+                    borderRight: '2.5px solid #00adb5',
+                    borderTop: 'none',
+                    borderBottom: 'none',
+                    background: '#181c1f',
+                    color: '#fff',
+                    opacity: 1,
+                    filter: 'none'
+                  }
                 : { background: '#23272b', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
             >
               <span className="overlay-score">
