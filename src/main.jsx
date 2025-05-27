@@ -340,7 +340,8 @@ function OverlayView() {
         TeamAccent1: payload.team1Accent ?? sb.TeamAccent1,
         TeamName2: payload.team2 ?? sb.TeamName2,
         TeamColor2: payload.team2Color ?? sb.TeamColor2,
-        TeamAccent2: payload.team2Accent ?? sb.TeamAccent2
+        TeamAccent2: payload.team2Accent ?? sb.TeamAccent2,
+        Tournament: payload.tournament ?? sb.Tournament // <-- add this line
       }));
     });
     s.on('UpdateDisplay', payload => {
