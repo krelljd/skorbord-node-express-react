@@ -1,3 +1,4 @@
+import React from 'react';
 import { StrictMode, useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
@@ -5,8 +6,20 @@ import './index.css';
 import App from './App.jsx';
 import io from 'socket.io-client';
 
-const API_BASE = 'http://localhost:4000/api';
-const SOCKET_URL = 'http://localhost:4000';
+// Use relative URLs in production, fallback to localhost in development
+defaultApiBase();
+function defaultApiBase() {
+  if (typeof window !== 'undefined' && window.location && window.location.protocol === 'https:') {
+    // Use same origin for API and socket in production (assumes reverse proxy or same FQDN)
+    window.API_BASE = '/api';
+    window.SOCKET_URL = window.location.origin;
+  } else {
+    window.API_BASE = 'http://localhost:4000/api';
+    window.SOCKET_URL = 'http://localhost:4000';
+  }
+}
+const API_BASE = window.API_BASE;
+const SOCKET_URL = window.SOCKET_URL;
 
 // --- Utility Hooks ---
 function useColorScheme() {
