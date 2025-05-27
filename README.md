@@ -55,7 +55,28 @@ A real-time volleyball scoreboard app using Node.js, Express, React, Socket.IO, 
 
 - Use [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/) to expose the app securely at your custom domain.
 
+## Inserting a Scoreboard via API (Example)
 
+You can create a new scoreboard using the backend REST API with this curl command:
+
+```sh
+curl -X POST http://localhost:4000/api/scoreboard \
+  -H "Content-Type: application/json" \
+  -d '{
+    "TeamName1": "Team A",
+    "TeamName2": "Team B",
+    "TeamColor1": "#00adb5",
+    "TeamAccent1": "#007c85",
+    "TeamColor2": "#ff6f3c",
+    "TeamAccent2": "#ffb26b",
+    "Tournament": "Spring Open",
+    "BoardColor": "#23272b",
+    "Scores": "0,0,0,0,0,0",
+    "ActiveSet": 0
+  }'
+```
+
+This will return a JSON object with the generated `BoardSqid` for use in the admin and overlay URLs.
 
 ## License
 
