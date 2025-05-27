@@ -73,7 +73,7 @@ button:focus-visible {
   height: 100vh;
   background: transparent;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: flex-start;
 }
 .overlay-board {
