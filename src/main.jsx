@@ -399,7 +399,7 @@ function OverlayView() {
             </div>
             <span className="overlay-team-name" style={{ color: getContrastText('#23272b') }}>{scoreboard.TeamName2}</span>
           </div>
-          {[0, 1, 2].map(setIdx => {
+          {[0, 1, 2].map((setIdx, arrIdx, arr) => {
             const team1Score = scores[setIdx * 2];
             const team2Score = scores[setIdx * 2 + 1];
             const setTarget = setIdx === 2 ? 15 : 25;
@@ -414,28 +414,30 @@ function OverlayView() {
               team2Score - team1Score >= 2
             ) team2Won = true;
             return (
-              <div
-                key={setIdx}
-                className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
-                style={scoreboard.ActiveSet === setIdx
-                  ? {
-                      borderLeft: '2.5px solid #00adb5',
-                      borderRight: '2.5px solid #00adb5',
-                      borderTop: 'none',
-                      borderBottom: 'none',
-                      background: '#181c1f',
-                      color: '#fff',
-                      opacity: 1,
-                      filter: 'none'
-                    }
-                  : { background: '#23272b', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
-              >
-                <span className="overlay-score">
-                  <span style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
-                  <span className="overlay-score-sep">-</span>
-                  <span style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
-                </span>
-              </div>
+              <>
+                <div
+                  key={setIdx}
+                  className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
+                  style={scoreboard.ActiveSet === setIdx
+                    ? {
+                        border: 'none',
+                        background: '#23272b',
+                        color: '#fff',
+                        opacity: 1,
+                        filter: 'none'
+                      }
+                    : { background: '#23272b', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
+                >
+                  <span className="overlay-score">
+                    <span style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
+                    <span className="overlay-score-sep">-</span>
+                    <span style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
+                  </span>
+                </div>
+                {arrIdx < arr.length - 1 && (
+                  <div style={{ width: 1, height: 38, background: '#444', margin: '0 8px', alignSelf: 'center', borderRadius: 1, opacity: 0.7 }} />
+                )}
+              </>
             );
           })}
         </div>
