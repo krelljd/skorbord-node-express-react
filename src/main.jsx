@@ -357,22 +357,44 @@ function OverlayView() {
     '--team2': scoreboard.TeamColor2,
     '--team2-accent': scoreboard.TeamAccent2
   };
+  // Helper: get readable text color for a given bg
+  function getContrastText(bg) {
+    if (!bg) return '#222';
+    // Remove # and parse hex
+    const hex = bg.replace('#', '');
+    const r = parseInt(hex.substring(0,2), 16);
+    const g = parseInt(hex.substring(2,4), 16);
+    const b = parseInt(hex.substring(4,6), 16);
+    // Luminance
+    const luminance = (0.299*r + 0.587*g + 0.114*b) / 255;
+    return luminance > 0.6 ? '#222' : '#fff';
+  }
+
   return (
     <div className="overlay-root">
       <div className="overlay-board" style={boardStyle}>
         <div className="overlay-row">
-          <div className="overlay-team overlay-team1" style={{ background: scoreboard.TeamColor1 }}>
-            <div className="overlay-color" style={{ background: scoreboard.TeamAccent1 }} />
-            <span className="overlay-team-name">{scoreboard.TeamName1}</span>
+          <div className="overlay-team overlay-team1" style={{ background: '#23272b', display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 3 }}>
+              <div className="overlay-color" style={{ background: scoreboard.TeamColor1, border: `1.5px solid ${getContrastText(scoreboard.TeamColor1)}`, width: 14, height: '100%', margin: 0, borderRadius: 2 }} />
+              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent1 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent1) && scoreboard.TeamAccent1 !== '#000000') ? scoreboard.TeamAccent1 : scoreboard.TeamColor1, border: `1.5px solid ${getContrastText((scoreboard.TeamAccent1 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent1) && scoreboard.TeamAccent1 !== '#000000') ? scoreboard.TeamAccent1 : scoreboard.TeamColor1)}`, width: 10, height: '100%', margin: 0, borderRadius: 2 }} />
+            </div>
+            <span className="overlay-team-name" style={{ color: getContrastText('#23272b') }}>{scoreboard.TeamName1}</span>
           </div>
-          <div className="overlay-team overlay-team2" style={{ background: scoreboard.TeamColor2 }}>
-            <div className="overlay-color" style={{ background: scoreboard.TeamAccent2 }} />
-            <span className="overlay-team-name">{scoreboard.TeamName2}</span>
+          <div className="overlay-team overlay-team2" style={{ background: '#23272b', display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 3 }}>
+              <div className="overlay-color" style={{ background: scoreboard.TeamColor2, border: `1.5px solid ${getContrastText(scoreboard.TeamColor2)}`, width: 14, height: '100%', margin: 0, borderRadius: 2 }} />
+              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent2 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent2) && scoreboard.TeamAccent2 !== '#000000') ? scoreboard.TeamAccent2 : scoreboard.TeamColor2, border: `1.5px solid ${getContrastText((scoreboard.TeamAccent2 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent2) && scoreboard.TeamAccent2 !== '#000000') ? scoreboard.TeamAccent2 : scoreboard.TeamColor2)}`, width: 10, height: '100%', margin: 0, borderRadius: 2 }} />
+            </div>
+            <span className="overlay-team-name" style={{ color: getContrastText('#23272b') }}>{scoreboard.TeamName2}</span>
           </div>
           {[0, 1, 2].map(setIdx => (
             <div
               key={setIdx}
               className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
+              style={scoreboard.ActiveSet === setIdx
+                ? { border: '2.5px solid #00adb5', background: '#181c1f', color: '#fff', opacity: 1, filter: 'none' }
+                : { background: '#23272b', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
             >
               <span className="overlay-score">
                 {scores[setIdx * 2]}
