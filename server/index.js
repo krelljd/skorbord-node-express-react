@@ -40,7 +40,10 @@ app.get('/api/scoreboard/:sqid', (req, res) => {
   const id = sqids.decode(req.params.sqid)[0];
   if (!id) return res.status(404).json({ error: 'Invalid Sqid' });
   db.get('SELECT * FROM scoreboards WHERE ScoreboardId = ?', [id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) {
+      console.error('GET /api/scoreboard/:sqid error:', err);
+      return res.status(500).json({ error: err.message });
+    }
     if (!row) return res.status(404).json({ error: 'Not found' });
     res.json(row);
   });
@@ -53,7 +56,10 @@ app.post('/api/scoreboard', (req, res) => {
     'INSERT INTO scoreboards (TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet],
     function (err) {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) {
+        console.error('POST /api/scoreboard error:', err);
+        return res.status(500).json({ error: err.message });
+      }
       const sqid = sqids.encode([this.lastID]);
       res.json({ BoardSqid: sqid });
     }
@@ -69,7 +75,10 @@ app.put('/api/scoreboard/:sqid', (req, res) => {
     'UPDATE scoreboards SET TeamName1=?, TeamName2=?, TeamColor1=?, TeamAccent1=?, TeamColor2=?, TeamAccent2=?, Tournament=?, BoardColor=?, Scores=?, ActiveSet=? WHERE ScoreboardId=?',
     [TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet, id],
     function (err) {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) {
+        console.error('PUT /api/scoreboard/:sqid error:', err);
+        return res.status(500).json({ error: err.message });
+      }
       res.json({ success: true });
     }
   );
