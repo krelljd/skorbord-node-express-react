@@ -1,4 +1,4 @@
-import { StrictMode, useState, useEffect } from 'react';
+import { StrictMode, useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import './index.css';
@@ -8,22 +8,8 @@ import io from 'socket.io-client';
 const API_BASE = 'http://localhost:4000/api';
 const SOCKET_URL = 'http://localhost:4000';
 
-function AdminView() {
-  const { sqid } = useParams();
-  const [scoreboard, setScoreboard] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [socket, setSocket] = useState(null);
-  // Editable fields
-  const [editTeam1, setEditTeam1] = useState('');
-  const [editTeam2, setEditTeam2] = useState('');
-  const [editTournament, setEditTournament] = useState('');
-  const [editTeam1Color, setEditTeam1Color] = useState('#00adb5');
-  const [editTeam1Accent, setEditTeam1Accent] = useState('#007c85');
-  const [editTeam2Color, setEditTeam2Color] = useState('#ff6f3c');
-  const [editTeam2Accent, setEditTeam2Accent] = useState('#ffb26b');
-  const [showEdit, setShowEdit] = useState(false);
-  // Detect system color scheme (HOOKS MUST BE AT TOP)
+// --- Utility Hooks ---
+function useColorScheme() {
   const [isDark, setIsDark] = useState(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -31,19 +17,18 @@ function AdminView() {
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
+  return isDark;
+}
 
+function useScoreboard(sqid) {
+  const [scoreboard, setScoreboard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   useEffect(() => {
     fetch(`${API_BASE}/scoreboard/${sqid}`)
       .then(r => r.json())
       .then(data => {
         setScoreboard(data);
-        setEditTeam1(data.TeamName1 || '');
-        setEditTeam2(data.TeamName2 || '');
-        setEditTournament(data.Tournament || '');
-        setEditTeam1Color(data.TeamColor1 || '#00adb5');
-        setEditTeam1Accent(data.TeamAccent1 || '#007c85');
-        setEditTeam2Color(data.TeamColor2 || '#ff6f3c');
-        setEditTeam2Accent(data.TeamAccent2 || '#ffb26b');
         setLoading(false);
       })
       .catch(() => {
@@ -51,14 +36,97 @@ function AdminView() {
         setLoading(false);
       });
   }, [sqid]);
+  return { scoreboard, setScoreboard, loading, error };
+}
 
+function useSocket(sqid, scoreboard, setScoreboard) {
   useEffect(() => {
     if (!scoreboard) return;
     const s = io(SOCKET_URL);
     s.emit('joinBoard', sqid);
-    setSocket(s);
+    s.on('UpdateScores', payload => {
+      if (Array.isArray(payload)) {
+        setScoreboard(sb => ({ ...sb, Scores: payload.join(',') }));
+      } else if (payload && Array.isArray(payload.scores)) {
+        setScoreboard(sb => ({ ...sb, Scores: payload.scores.join(',') }));
+      }
+    });
+    s.on('UpdateActiveSet', payload => {
+      if (typeof payload === 'number') {
+        setScoreboard(sb => ({ ...sb, ActiveSet: payload }));
+      } else if (payload && typeof payload.setIndex === 'number') {
+        setScoreboard(sb => ({ ...sb, ActiveSet: payload.setIndex }));
+      }
+    });
+    s.on('UpdateTeamInfo', payload => {
+      setScoreboard(sb => ({
+        ...sb,
+        TeamName1: payload.team1 ?? sb.TeamName1,
+        TeamColor1: payload.team1Color ?? sb.TeamColor1,
+        TeamAccent1: payload.team1Accent ?? sb.TeamAccent1,
+        TeamName2: payload.team2 ?? sb.TeamName2,
+        TeamColor2: payload.team2Color ?? sb.TeamColor2,
+        TeamAccent2: payload.team2Accent ?? sb.TeamAccent2,
+        Tournament: payload.tournament ?? sb.Tournament
+      }));
+    });
+    s.on('UpdateDisplay', payload => {
+      setScoreboard(sb => ({
+        ...sb,
+        Tournament: payload.tournament ?? sb.Tournament,
+        BoardColor: payload.boardColor ?? sb.BoardColor
+      }));
+    });
     return () => s.disconnect();
-  }, [scoreboard, sqid]);
+  }, [scoreboard, sqid, setScoreboard]);
+}
+
+// --- AdminView ---
+function AdminView() {
+  const { sqid } = useParams();
+  const { scoreboard, setScoreboard, loading, error } = useScoreboard(sqid);
+  const [edit, setEdit] = useState({
+    TeamName1: '', TeamName2: '', Tournament: '',
+    TeamColor1: '#00adb5', TeamAccent1: '#007c85',
+    TeamColor2: '#ff6f3c', TeamAccent2: '#ffb26b'
+  });
+  const [showEdit, setShowEdit] = useState(false);
+  const isDark = useColorScheme();
+  const socketRef = useRef();
+
+  // Sync edit fields with scoreboard
+  useEffect(() => {
+    if (!scoreboard) return;
+    setEdit({
+      TeamName1: scoreboard.TeamName1 || '',
+      TeamName2: scoreboard.TeamName2 || '',
+      Tournament: scoreboard.Tournament || '',
+      TeamColor1: scoreboard.TeamColor1 || '#00adb5',
+      TeamAccent1: scoreboard.TeamAccent1 || '#007c85',
+      TeamColor2: scoreboard.TeamColor2 || '#ff6f3c',
+      TeamAccent2: scoreboard.TeamAccent2 || '#ffb26b',
+    });
+  }, [scoreboard]);
+
+  useEffect(() => {
+    if (!scoreboard) return;
+    if (!socketRef.current) {
+      socketRef.current = io(SOCKET_URL);
+      socketRef.current.emit('joinBoard', sqid);
+    }
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [sqid, scoreboard]);
+
+  const emitSocket = (event, payload) => {
+    if (socketRef.current) {
+      socketRef.current.emit(event, payload);
+    }
+  };
 
   const updateScore = (setIdx, teamIdx, delta) => {
     if (!scoreboard) return;
@@ -69,11 +137,9 @@ function AdminView() {
     const updated = { ...scoreboard, Scores: newScores };
     setScoreboard(updated);
     fetch(`${API_BASE}/scoreboard/${sqid}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...updated })
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
     });
-    if (socket) socket.emit('UpdateScores', { sqid, scores });
+    emitSocket('UpdateScores', { sqid, scores });
   };
 
   const updateActiveSet = (setIdx) => {
@@ -81,44 +147,30 @@ function AdminView() {
     const updated = { ...scoreboard, ActiveSet: setIdx };
     setScoreboard(updated);
     fetch(`${API_BASE}/scoreboard/${sqid}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...updated })
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
     });
-    if (socket) socket.emit('UpdateActiveSet', { sqid, setIndex: setIdx });
+    emitSocket('UpdateActiveSet', { sqid, setIndex: setIdx });
   };
 
-  // Save team/tournament edits
   const saveTeamInfo = () => {
     if (!scoreboard) return;
-    const updated = {
-      ...scoreboard,
-      TeamName1: editTeam1,
-      TeamName2: editTeam2,
-      TeamColor1: editTeam1Color,
-      TeamAccent1: editTeam1Accent,
-      TeamColor2: editTeam2Color,
-      TeamAccent2: editTeam2Accent,
-      Tournament: editTournament
-    };
+    const updated = { ...scoreboard, ...edit };
     setScoreboard(updated);
     fetch(`${API_BASE}/scoreboard/${sqid}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...updated })
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
     });
-    if (socket) socket.emit('UpdateTeamInfo', {
+    emitSocket('UpdateTeamInfo', {
       sqid,
-      team1: editTeam1,
-      team1Color: editTeam1Color,
-      team1Accent: editTeam1Accent,
-      team2: editTeam2,
-      team2Color: editTeam2Color,
-      team2Accent: editTeam2Accent
+      team1: edit.TeamName1,
+      team1Color: edit.TeamColor1,
+      team1Accent: edit.TeamAccent1,
+      team2: edit.TeamName2,
+      team2Color: edit.TeamColor2,
+      team2Accent: edit.TeamAccent2
     });
-    if (socket) socket.emit('UpdateDisplay', {
+    emitSocket('UpdateDisplay', {
       sqid,
-      tournament: editTournament,
+      tournament: edit.Tournament,
       boardColor: scoreboard.BoardColor
     });
   };
@@ -128,20 +180,18 @@ function AdminView() {
   if (!scoreboard) return <div>Not found</div>;
 
   const scores = scoreboard.Scores.split(',').map(Number);
-  // CSS vars for theme
   const themeVars = {
-    '--team1': '#00adb5',
-    '--team2': '#ff6f3c',
+    '--team1': '#00adb5', '--team2': '#ff6f3c',
     '--bg': isDark ? '#181c1f' : '#f7fafd',
     '--card': isDark ? '#23272b' : '#f7fafd',
     '--border': isDark ? '#222831' : '#eee',
     '--text': isDark ? '#f7fafd' : '#222',
     '--input-bg': isDark ? '#23272b' : '#fff',
-    '--input-border': isDark ? '#00adb5' : '#00adb5',
+    '--input-border': '#00adb5',
     '--bottom-bg': isDark ? '#181c1f' : '#fff',
     '--bottom-shadow': isDark ? '#0006' : '#0001',
     '--edit-bg': isDark ? '#23272b' : '#fff',
-    '--edit-shadow': isDark ? '#00adb511' : '#00adb511',
+    '--edit-shadow': '#00adb511',
   };
 
   return (
@@ -184,7 +234,7 @@ function AdminView() {
                 </button>
               </div>
               {/* Team 1 header */}
-              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team1)', marginBottom: 2, textAlign: 'center' }}>{editTeam1}</div>
+              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team1)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName1}</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, marginBottom: 14 }}>
                 <button
                   onClick={() => updateScore(setIdx, 0, -1)}
@@ -203,7 +253,7 @@ function AdminView() {
                 </button>
               </div>
               {/* Team 2 header */}
-              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team2)', marginBottom: 2, textAlign: 'center' }}>{editTeam2}</div>
+              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team2)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName2}</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
                 <button
                   onClick={() => updateScore(setIdx, 1, -1)}
@@ -243,8 +293,8 @@ function AdminView() {
             >
               <input
                 type="text"
-                value={editTeam1}
-                onChange={e => setEditTeam1(e.target.value)}
+                value={edit.TeamName1}
+                onChange={e => setEdit({ ...edit, TeamName1: e.target.value })}
                 placeholder="Team 1 Name"
                 aria-label="Edit Team 1 Name"
                 style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
@@ -252,17 +302,17 @@ function AdminView() {
               <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
                 <label style={{ fontSize: 13, color: 'var(--team1)' }}>
                   Main Color
-                  <input type="color" value={editTeam1Color} onChange={e => setEditTeam1Color(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Main Color" />
+                  <input type="color" value={edit.TeamColor1} onChange={e => setEdit({ ...edit, TeamColor1: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Main Color" />
                 </label>
                 <label style={{ fontSize: 13, color: 'var(--team1)' }}>
                   Accent
-                  <input type="color" value={editTeam1Accent} onChange={e => setEditTeam1Accent(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Accent Color" />
+                  <input type="color" value={edit.TeamAccent1} onChange={e => setEdit({ ...edit, TeamAccent1: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Accent Color" />
                 </label>
               </div>
               <input
                 type="text"
-                value={editTeam2}
-                onChange={e => setEditTeam2(e.target.value)}
+                value={edit.TeamName2}
+                onChange={e => setEdit({ ...edit, TeamName2: e.target.value })}
                 placeholder="Team 2 Name"
                 aria-label="Edit Team 2 Name"
                 style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team2)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
@@ -270,17 +320,17 @@ function AdminView() {
               <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
                 <label style={{ fontSize: 13, color: 'var(--team2)' }}>
                   Main Color
-                  <input type="color" value={editTeam2Color} onChange={e => setEditTeam2Color(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Main Color" />
+                  <input type="color" value={edit.TeamColor2} onChange={e => setEdit({ ...edit, TeamColor2: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Main Color" />
                 </label>
                 <label style={{ fontSize: 13, color: 'var(--team2)' }}>
                   Accent
-                  <input type="color" value={editTeam2Accent} onChange={e => setEditTeam2Accent(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Accent Color" />
+                  <input type="color" value={edit.TeamAccent2} onChange={e => setEdit({ ...edit, TeamAccent2: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Accent Color" />
                 </label>
               </div>
               <input
                 type="text"
-                value={editTournament}
-                onChange={e => setEditTournament(e.target.value)}
+                value={edit.Tournament}
+                onChange={e => setEdit({ ...edit, Tournament: e.target.value })}
                 placeholder="Tournament Name"
                 aria-label="Edit Tournament Name"
                 style={{ fontWeight: 500, fontSize: 15, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 120, color: 'var(--text)', marginBottom: 10 }}
