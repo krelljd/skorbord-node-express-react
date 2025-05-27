@@ -399,30 +399,45 @@ function OverlayView() {
             </div>
             <span className="overlay-team-name" style={{ color: getContrastText('#23272b') }}>{scoreboard.TeamName2}</span>
           </div>
-          {[0, 1, 2].map(setIdx => (
-            <div
-              key={setIdx}
-              className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
-              style={scoreboard.ActiveSet === setIdx
-                ? {
-                    borderLeft: '2.5px solid #00adb5',
-                    borderRight: '2.5px solid #00adb5',
-                    borderTop: 'none',
-                    borderBottom: 'none',
-                    background: '#181c1f',
-                    color: '#fff',
-                    opacity: 1,
-                    filter: 'none'
-                  }
-                : { background: '#23272b', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
-            >
-              <span className="overlay-score">
-                {scores[setIdx * 2]}
-                <span className="overlay-score-sep">-</span>
-                {scores[setIdx * 2 + 1]}
-              </span>
-            </div>
-          ))}
+          {[0, 1, 2].map(setIdx => {
+            const team1Score = scores[setIdx * 2];
+            const team2Score = scores[setIdx * 2 + 1];
+            const setTarget = setIdx === 2 ? 15 : 25;
+            // Determine if either team has won the set
+            let team1Won = false, team2Won = false;
+            if (
+              team1Score >= setTarget &&
+              team1Score - team2Score >= 2
+            ) team1Won = true;
+            if (
+              team2Score >= setTarget &&
+              team2Score - team1Score >= 2
+            ) team2Won = true;
+            return (
+              <div
+                key={setIdx}
+                className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
+                style={scoreboard.ActiveSet === setIdx
+                  ? {
+                      borderLeft: '2.5px solid #00adb5',
+                      borderRight: '2.5px solid #00adb5',
+                      borderTop: 'none',
+                      borderBottom: 'none',
+                      background: '#181c1f',
+                      color: '#fff',
+                      opacity: 1,
+                      filter: 'none'
+                    }
+                  : { background: '#23272b', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
+              >
+                <span className="overlay-score">
+                  <span style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
+                  <span className="overlay-score-sep">-</span>
+                  <span style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
+                </span>
+              </div>
+            );
+          })}
         </div>
         <div className="overlay-tournament">{scoreboard.Tournament}</div>
       </div>
