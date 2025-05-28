@@ -1,5 +1,5 @@
 import React from 'react';
-import { StrictMode, useState, useEffect, useRef } from 'react';
+import { StrictMode, useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import './index.css';
@@ -104,7 +104,6 @@ function AdminView() {
   });
   const [showEdit, setShowEdit] = useState(false);
   const isDark = useColorScheme();
-  const socketRef = useRef();
 
   // Sync edit fields with scoreboard
   useEffect(() => {
@@ -120,24 +119,15 @@ function AdminView() {
     });
   }, [scoreboard]);
 
-  useEffect(() => {
-    if (!scoreboard) return;
-    if (!socketRef.current) {
-      socketRef.current = io(SOCKET_URL); // reverted: removed { path: '/api/socket.io' }
-      socketRef.current.emit('joinBoard', sqid);
-    }
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [sqid, scoreboard]);
+  // Use the shared socket hook for real-time updates
+  useSocket(sqid, setScoreboard);
 
+  // Use a local socket for emitting events only
   const emitSocket = (event, payload) => {
-    if (socketRef.current) {
-      socketRef.current.emit(event, payload);
-    }
+    const s = io(SOCKET_URL);
+    s.emit('joinBoard', sqid);
+    s.emit(event, payload);
+    setTimeout(() => s.disconnect(), 500); // disconnect after short delay
   };
 
   const updateScore = (setIdx, teamIdx, delta) => {
