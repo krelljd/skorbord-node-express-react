@@ -338,6 +338,36 @@ function AdminView() {
                 style={{ fontWeight: 500, fontSize: 15, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 120, color: 'var(--text)', marginBottom: 10 }}
               />
               <button type="submit" style={{ background: 'var(--team1)', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 15, padding: '10px 0', marginTop: 4, boxShadow: '0 1px 4px #00adb522' }}>Save</button>
+              <button
+                type="button"
+                style={{
+                  background: '#e53935',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  fontWeight: 700,
+                  fontSize: 15,
+                  padding: '10px 0',
+                  marginTop: 8,
+                  boxShadow: '0 1px 4px #e5393522',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  // Reset scores for all sets to 0 and activate Set 1
+                  if (!scoreboard) return;
+                  const resetScores = '0,0,0,0,0,0';
+                  const updated = { ...scoreboard, Scores: resetScores, ActiveSet: 0 };
+                  setScoreboard(updated);
+                  fetch(`${API_BASE}/scoreboard/${sqid}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
+                  });
+                  emitSocket('UpdateScores', { sqid, scores: [0,0,0,0,0,0] });
+                  emitSocket('UpdateActiveSet', { sqid, setIndex: 0 });
+                }}
+                aria-label="Reset all scores to zero and activate Set 1"
+              >
+                Reset Scores
+              </button>
             </form>
           </div>
         )}
