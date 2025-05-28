@@ -197,180 +197,182 @@ function AdminView() {
   };
 
   return (
-    <div className="admin-view" style={{ maxWidth: 420, margin: '0 auto', padding: 0, background: 'none', boxShadow: 'none', ...themeVars }}>
-      {/* Material-style card for main controls */}
-      <div style={{ background: 'var(--card)', borderRadius: 18, boxShadow: '0 2px 12px #00adb522', padding: 20, marginTop: 24, marginBottom: 16 }}>
-        <div style={{ marginTop: 18, marginBottom: 0 }}>
-          {[0, 1, 2].map(setIdx => (
-            <div key={setIdx} style={{
-              border: scoreboard.ActiveSet === setIdx ? `2px solid var(--team1)` : '1px solid var(--border)',
-              borderRadius: 14,
-              background: scoreboard.ActiveSet === setIdx ? '#e0f7fa' : 'var(--card)',
-              marginBottom: 18,
-              padding: 10, // reduced from 14
-              boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 3px #00adb511' : 'none', // less shadow
-              transition: 'box-shadow 0.2s',
-              minHeight: 0 // allow smaller
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontWeight: 600, color: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--text)', fontSize: '1em' }}>Set {setIdx + 1}</span>
-                <button
-                  style={{
-                    background: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--border)',
-                    color: scoreboard.ActiveSet === setIdx ? '#fff' : 'var(--text)',
-                    border: 'none',
-                    borderRadius: 6, // smaller radius
-                    padding: '4px 12px', // smaller button
-                    fontWeight: 500, // less bold
-                    marginLeft: 6,
-                    cursor: 'pointer',
-                    fontSize: '0.95em', // relative font size
-                    boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 2px #00adb511' : 'none',
-                    transition: 'box-shadow 0.2s',
-                    opacity: scoreboard.ActiveSet === setIdx ? 0.85 : 1 // less prominent
-                  }}
-                  onClick={() => updateActiveSet(setIdx)}
-                  aria-label={`Set active set to ${setIdx + 1}`}
-                >
-                  {scoreboard.ActiveSet === setIdx ? 'Active' : 'Set Active'}
-                </button>
+    <div style={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="admin-view" style={{ maxWidth: 420, width: '100%', padding: 0, background: 'none', boxShadow: 'none', ...themeVars }}>
+        {/* Material-style card for main controls */}
+        <div style={{ background: 'var(--card)', borderRadius: 18, boxShadow: '0 2px 12px #00adb522', padding: 20, marginTop: 24, marginBottom: 16 }}>
+          <div style={{ marginTop: 18, marginBottom: 0 }}>
+            {[0, 1, 2].map(setIdx => (
+              <div key={setIdx} style={{
+                border: scoreboard.ActiveSet === setIdx ? `2px solid var(--team1)` : '1px solid var(--border)',
+                borderRadius: 14,
+                background: scoreboard.ActiveSet === setIdx ? '#e0f7fa' : 'var(--card)',
+                marginBottom: 18,
+                padding: 10, // reduced from 14
+                boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 3px #00adb511' : 'none', // less shadow
+                transition: 'box-shadow 0.2s',
+                minHeight: 0 // allow smaller
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontWeight: 600, color: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--text)', fontSize: '1em' }}>Set {setIdx + 1}</span>
+                  <button
+                    style={{
+                      background: scoreboard.ActiveSet === setIdx ? 'var(--team1)' : 'var(--border)',
+                      color: scoreboard.ActiveSet === setIdx ? '#fff' : 'var(--text)',
+                      border: 'none',
+                      borderRadius: 6, // smaller radius
+                      padding: '4px 12px', // smaller button
+                      fontWeight: 500, // less bold
+                      marginLeft: 6,
+                      cursor: 'pointer',
+                      fontSize: '0.95em', // relative font size
+                      boxShadow: scoreboard.ActiveSet === setIdx ? '0 1px 2px #00adb511' : 'none',
+                      transition: 'box-shadow 0.2s',
+                      opacity: scoreboard.ActiveSet === setIdx ? 0.85 : 1 // less prominent
+                    }}
+                    onClick={() => updateActiveSet(setIdx)}
+                    aria-label={`Set active set to ${setIdx + 1}`}
+                  >
+                    {scoreboard.ActiveSet === setIdx ? 'Active' : 'Set Active'}
+                  </button>
+                </div>
+                {/* Team 1 header */}
+                <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team1)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName1}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, marginBottom: 14 }}>
+                  <button
+                    onClick={() => updateScore(setIdx, 0, -1)}
+                    style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e0f7fa', color: 'var(--team1)', border: 'none', borderRadius: 22, fontWeight: 700, marginRight: 2, boxShadow: '0 1px 4px #00adb522', transition: 'background 0.2s' }}
+                    aria-label="Decrement Team 1 Score"
+                  >
+                    -
+                  </button>
+                  <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team1)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2]}</span>
+                  <button
+                    onClick={() => updateScore(setIdx, 0, 1)}
+                    style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team1)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #00adb522', transition: 'background 0.2s' }}
+                    aria-label="Increment Team 1 Score"
+                  >
+                    +
+                  </button>
+                </div>
+                {/* Team 2 header */}
+                <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team2)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName2}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
+                  <button
+                    onClick={() => updateScore(setIdx, 1, -1)}
+                    style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff3e6', color: 'var(--team2)', border: 'none', borderRadius: 22, fontWeight: 700, marginRight: 2, boxShadow: '0 1px 4px #ff6f3c22', transition: 'background 0.2s' }}
+                    aria-label="Decrement Team 2 Score"
+                  >
+                    -
+                  </button>
+                  <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team2)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2 + 1]}</span>
+                  <button
+                    onClick={() => updateScore(setIdx, 1, 1)}
+                    style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team2)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #ff6f3c22', transition: 'background 0.2s' }}
+                    aria-label="Increment Team 2 Score"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-              {/* Team 1 header */}
-              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team1)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName1}</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, marginBottom: 14 }}>
-                <button
-                  onClick={() => updateScore(setIdx, 0, -1)}
-                  style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e0f7fa', color: 'var(--team1)', border: 'none', borderRadius: 22, fontWeight: 700, marginRight: 2, boxShadow: '0 1px 4px #00adb522', transition: 'background 0.2s' }}
-                  aria-label="Decrement Team 1 Score"
-                >
-                  -
-                </button>
-                <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team1)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2]}</span>
-                <button
-                  onClick={() => updateScore(setIdx, 0, 1)}
-                  style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team1)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #00adb522', transition: 'background 0.2s' }}
-                  aria-label="Increment Team 1 Score"
-                >
-                  +
-                </button>
-              </div>
-              {/* Team 2 header */}
-              <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team2)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName2}</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
-                <button
-                  onClick={() => updateScore(setIdx, 1, -1)}
-                  style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff3e6', color: 'var(--team2)', border: 'none', borderRadius: 22, fontWeight: 700, marginRight: 2, boxShadow: '0 1px 4px #ff6f3c22', transition: 'background 0.2s' }}
-                  aria-label="Decrement Team 2 Score"
-                >
-                  -
-                </button>
-                <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team2)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2 + 1]}</span>
-                <button
-                  onClick={() => updateScore(setIdx, 1, 1)}
-                  style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team2)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #ff6f3c22', transition: 'background 0.2s' }}
-                  aria-label="Increment Team 2 Score"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Collapsible bottom section for team/tournament editing */}
-      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: 'var(--bottom-bg)', borderTop: '1.5px solid var(--border)', boxShadow: '0 -2px 8px var(--bottom-shadow)', padding: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-        <button
-          onClick={() => setShowEdit(v => !v)}
-          style={{ width: '100%', maxWidth: 420, background: 'var(--card)', color: 'var(--team1)', border: 'none', borderTopLeftRadius: 8, borderTopRightRadius: 8, fontWeight: 700, fontSize: 16, padding: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 -1px 4px var(--edit-shadow)' }}
-          aria-expanded={showEdit}
-        >
-          <span style={{ marginRight: 8 }}>{showEdit ? 'Hide' : 'Show'} Match Info</span>
-          <span style={{ fontSize: 18 }}>{showEdit ? '\u25B2' : '\u25BC'}</span>
-        </button>
-        {showEdit && (
-          <div style={{ width: '100%', maxWidth: 420, padding: 16, background: 'var(--edit-bg)', borderBottomLeftRadius: 8, borderBottomRightRadius: 8, boxShadow: '0 2px 8px var(--edit-shadow)' }}>
-            <form
-              style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'stretch', justifyContent: 'center', width: '100%' }}
-              onSubmit={e => { e.preventDefault(); saveTeamInfo(); }}
-            >
-              <input
-                type="text"
-                value={edit.TeamName1}
-                onChange={e => setEdit({ ...edit, TeamName1: e.target.value })}
-                placeholder="Team 1 Name"
-                aria-label="Edit Team 1 Name"
-                style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
-              />
-              <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
-                <label style={{ fontSize: 13, color: 'var(--team1)' }}>
-                  Main Color
-                  <input type="color" value={edit.TeamColor1} onChange={e => setEdit({ ...edit, TeamColor1: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Main Color" />
-                </label>
-                <label style={{ fontSize: 13, color: 'var(--team1)' }}>
-                  Accent
-                  <input type="color" value={edit.TeamAccent1} onChange={e => setEdit({ ...edit, TeamAccent1: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Accent Color" />
-                </label>
-              </div>
-              <input
-                type="text"
-                value={edit.TeamName2}
-                onChange={e => setEdit({ ...edit, TeamName2: e.target.value })}
-                placeholder="Team 2 Name"
-                aria-label="Edit Team 2 Name"
-                style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team2)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
-              />
-              <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
-                <label style={{ fontSize: 13, color: 'var(--team2)' }}>
-                  Main Color
-                  <input type="color" value={edit.TeamColor2} onChange={e => setEdit({ ...edit, TeamColor2: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Main Color" />
-                </label>
-                <label style={{ fontSize: 13, color: 'var(--team2)' }}>
-                  Accent
-                  <input type="color" value={edit.TeamAccent2} onChange={e => setEdit({ ...edit, TeamAccent2: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Accent Color" />
-                </label>
-              </div>
-              <input
-                type="text"
-                value={edit.Tournament}
-                onChange={e => setEdit({ ...edit, Tournament: e.target.value })}
-                placeholder="Tournament Name"
-                aria-label="Edit Tournament Name"
-                style={{ fontWeight: 500, fontSize: 15, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 120, color: 'var(--text)', marginBottom: 10 }}
-              />
-              <button type="submit" style={{ background: 'var(--team1)', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 15, padding: '10px 0', marginTop: 4, boxShadow: '0 1px 4px #00adb522' }}>Save</button>
-              <button
-                type="button"
-                style={{
-                  background: '#e53935',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontWeight: 700,
-                  fontSize: 15,
-                  padding: '10px 0',
-                  marginTop: 8,
-                  boxShadow: '0 1px 4px #e5393522',
-                  cursor: 'pointer'
-                }}
-                onClick={() => {
-                  // Reset scores for all sets to 0 and activate Set 1
-                  if (!scoreboard) return;
-                  const resetScores = '0,0,0,0,0,0';
-                  const updated = { ...scoreboard, Scores: resetScores, ActiveSet: 0 };
-                  setScoreboard(updated);
-                  fetch(`${API_BASE}/scoreboard/${sqid}`, {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
-                  });
-                  emitSocket('UpdateScores', { sqid, scores: [0,0,0,0,0,0] });
-                  emitSocket('UpdateActiveSet', { sqid, setIndex: 0 });
-                }}
-                aria-label="Reset all scores to zero and activate Set 1"
-              >
-                Reset Scores
-              </button>
-            </form>
+            ))}
           </div>
-        )}
+        </div>
+        {/* Collapsible bottom section for team/tournament editing */}
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: 'var(--bottom-bg)', borderTop: '1.5px solid var(--border)', boxShadow: '0 -2px 8px var(--bottom-shadow)', padding: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+          <button
+            onClick={() => setShowEdit(v => !v)}
+            style={{ width: '100%', maxWidth: 420, background: 'var(--card)', color: 'var(--team1)', border: 'none', borderTopLeftRadius: 8, borderTopRightRadius: 8, fontWeight: 700, fontSize: 16, padding: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 -1px 4px var(--edit-shadow)' }}
+            aria-expanded={showEdit}
+          >
+            <span style={{ marginRight: 8 }}>{showEdit ? 'Hide' : 'Show'} Match Info</span>
+            <span style={{ fontSize: 18 }}>{showEdit ? '\u25B2' : '\u25BC'}</span>
+          </button>
+          {showEdit && (
+            <div style={{ width: '100%', maxWidth: 420, padding: 16, background: 'var(--edit-bg)', borderBottomLeftRadius: 8, borderBottomRightRadius: 8, boxShadow: '0 2px 8px var(--edit-shadow)' }}>
+              <form
+                style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'stretch', justifyContent: 'center', width: '100%' }}
+                onSubmit={e => { e.preventDefault(); saveTeamInfo(); }}
+              >
+                <input
+                  type="text"
+                  value={edit.TeamName1}
+                  onChange={e => setEdit({ ...edit, TeamName1: e.target.value })}
+                  placeholder="Team 1 Name"
+                  aria-label="Edit Team 1 Name"
+                  style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
+                />
+                <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                  <label style={{ fontSize: 13, color: 'var(--team1)' }}>
+                    Main Color
+                    <input type="color" value={edit.TeamColor1} onChange={e => setEdit({ ...edit, TeamColor1: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Main Color" />
+                  </label>
+                  <label style={{ fontSize: 13, color: 'var(--team1)' }}>
+                    Accent
+                    <input type="color" value={edit.TeamAccent1} onChange={e => setEdit({ ...edit, TeamAccent1: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 1 Accent Color" />
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  value={edit.TeamName2}
+                  onChange={e => setEdit({ ...edit, TeamName2: e.target.value })}
+                  placeholder="Team 2 Name"
+                  aria-label="Edit Team 2 Name"
+                  style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team2)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
+                />
+                <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                  <label style={{ fontSize: 13, color: 'var(--team2)' }}>
+                    Main Color
+                    <input type="color" value={edit.TeamColor2} onChange={e => setEdit({ ...edit, TeamColor2: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Main Color" />
+                  </label>
+                  <label style={{ fontSize: 13, color: 'var(--team2)' }}>
+                    Accent
+                    <input type="color" value={edit.TeamAccent2} onChange={e => setEdit({ ...edit, TeamAccent2: e.target.value })} style={{ marginLeft: 6, verticalAlign: 'middle', width: 32, height: 24, border: 'none', background: 'none' }} aria-label="Team 2 Accent Color" />
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  value={edit.Tournament}
+                  onChange={e => setEdit({ ...edit, Tournament: e.target.value })}
+                  placeholder="Tournament Name"
+                  aria-label="Edit Tournament Name"
+                  style={{ fontWeight: 500, fontSize: 15, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 120, color: 'var(--text)', marginBottom: 10 }}
+                />
+                <button type="submit" style={{ background: 'var(--team1)', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 15, padding: '10px 0', marginTop: 4, boxShadow: '0 1px 4px #00adb522' }}>Save</button>
+                <button
+                  type="button"
+                  style={{
+                    background: '#e53935',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    fontWeight: 700,
+                    fontSize: 15,
+                    padding: '10px 0',
+                    marginTop: 8,
+                    boxShadow: '0 1px 4px #e5393522',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    // Reset scores for all sets to 0 and activate Set 1
+                    if (!scoreboard) return;
+                    const resetScores = '0,0,0,0,0,0';
+                    const updated = { ...scoreboard, Scores: resetScores, ActiveSet: 0 };
+                    setScoreboard(updated);
+                    fetch(`${API_BASE}/scoreboard/${sqid}`, {
+                      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
+                    });
+                    emitSocket('UpdateScores', { sqid, scores: [0,0,0,0,0,0] });
+                    emitSocket('UpdateActiveSet', { sqid, setIndex: 0 });
+                  }}
+                  aria-label="Reset all scores to zero and activate Set 1"
+                >
+                  Reset Scores
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -426,7 +428,7 @@ function OverlayView() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-board" style={boardStyle}>
+      <div className="overlay-board" style={{ ...boardStyle, borderRadius: 0, boxShadow: 'none' }}>
         <div className="overlay-row">
           <div className="overlay-team overlay-team1" style={{ 
             background: `linear-gradient(135deg, ${scoreboard.TeamColor1} 75%, ${scoreboard.TeamAccent1} 100%)`,
