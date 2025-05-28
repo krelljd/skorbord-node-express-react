@@ -52,9 +52,8 @@ function useScoreboard(sqid) {
   return { scoreboard, setScoreboard, loading, error };
 }
 
-function useSocket(sqid, scoreboard, setScoreboard) {
+function useSocket(sqid, setScoreboard) {
   useEffect(() => {
-    if (!scoreboard) return;
     const s = io(SOCKET_URL);
     s.emit('joinBoard', sqid);
     s.on('UpdateScores', payload => {
@@ -91,7 +90,7 @@ function useSocket(sqid, scoreboard, setScoreboard) {
       }));
     });
     return () => s.disconnect();
-  }, [scoreboard, sqid, setScoreboard]);
+  }, [sqid, setScoreboard]);
 }
 
 // --- AdminView ---
@@ -124,7 +123,7 @@ function AdminView() {
   useEffect(() => {
     if (!scoreboard) return;
     if (!socketRef.current) {
-      socketRef.current = io(SOCKET_URL);
+      socketRef.current = io(SOCKET_URL); // reverted: removed { path: '/api/socket.io' }
       socketRef.current.emit('joinBoard', sqid);
     }
     return () => {
@@ -362,7 +361,6 @@ function OverlayView() {
   const [scoreboard, setScoreboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     fetch(`${API_BASE}/scoreboard/${sqid}`)
@@ -377,46 +375,8 @@ function OverlayView() {
       });
   }, [sqid]);
 
-  useEffect(() => {
-    if (!scoreboard) return;
-    const s = io(SOCKET_URL);
-    s.emit('joinBoard', sqid);
-    s.on('UpdateScores', payload => {
-      if (Array.isArray(payload)) {
-        setScoreboard(sb => ({ ...sb, Scores: payload.join(',') }));
-      } else if (payload && Array.isArray(payload.scores)) {
-        setScoreboard(sb => ({ ...sb, Scores: payload.scores.join(',') }));
-      }
-    });
-    s.on('UpdateActiveSet', payload => {
-      if (typeof payload === 'number') {
-        setScoreboard(sb => ({ ...sb, ActiveSet: payload }));
-      } else if (payload && typeof payload.setIndex === 'number') {
-        setScoreboard(sb => ({ ...sb, ActiveSet: payload.setIndex }));
-      }
-    });
-    s.on('UpdateTeamInfo', payload => {
-      setScoreboard(sb => ({
-        ...sb,
-        TeamName1: payload.team1 ?? sb.TeamName1,
-        TeamColor1: payload.team1Color ?? sb.TeamColor1,
-        TeamAccent1: payload.team1Accent ?? sb.TeamAccent1,
-        TeamName2: payload.team2 ?? sb.TeamName2,
-        TeamColor2: payload.team2Color ?? sb.TeamColor2,
-        TeamAccent2: payload.team2Accent ?? sb.TeamAccent2,
-        Tournament: payload.tournament ?? sb.Tournament // <-- add this line
-      }));
-    });
-    s.on('UpdateDisplay', payload => {
-      setScoreboard(sb => ({
-        ...sb,
-        Tournament: payload.tournament ?? sb.Tournament,
-        BoardColor: payload.boardColor ?? sb.BoardColor
-      }));
-    });
-    setSocket(s);
-    return () => s.disconnect();
-  }, [scoreboard, sqid]);
+  // Use the shared socket hook for real-time updates
+  useSocket(sqid, setScoreboard);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
