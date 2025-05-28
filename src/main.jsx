@@ -429,25 +429,16 @@ function OverlayView() {
       <div className="overlay-board" style={boardStyle}>
         <div className="overlay-row">
           <div className="overlay-team overlay-team1" style={{ 
-            background: `linear-gradient(90deg, ${scoreboard.TeamColor1} 60%, ${scoreboard.TeamAccent1} 100%)`,
+            background: `linear-gradient(135deg, ${scoreboard.TeamColor1} 75%, ${scoreboard.TeamAccent1} 100%)`,
             display: 'flex', alignItems: 'center', padding: 0 }}>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 0 }}>
-              <div className="overlay-color" style={{ background: scoreboard.TeamColor1, border: 'none', width: 12, height: '100%', margin: 0, borderRadius: '2px 0 0 2px' }} />
-              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent1 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent1) && scoreboard.TeamAccent1.toLowerCase() !== scoreboard.TeamColor1?.toLowerCase()) ? scoreboard.TeamAccent1 : scoreboard.TeamColor1, border: 'none', width: 8, height: '100%', margin: 0, borderRadius: '0 2px 2px 0' }} />
-            </div>
-            <span className="overlay-team-name" style={{ color: getContrastText(scoreboard.TeamColor1) }}>{scoreboard.TeamName1}</span>
+            <span className="overlay-team-name" style={{ color: getContrastText(scoreboard.TeamColor1), padding: '6px 18px' }}>{scoreboard.TeamName1}</span>
           </div>
           <div className="overlay-team overlay-team2" style={{ 
-            background: `linear-gradient(90deg, ${scoreboard.TeamColor2} 60%, ${scoreboard.TeamAccent2} 100%)`,
+            background: `linear-gradient(135deg, ${scoreboard.TeamColor2} 75%, ${scoreboard.TeamAccent2} 100%)`,
             display: 'flex', alignItems: 'center', padding: 0 }}>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%', marginRight: 10, gap: 0 }}>
-              <div className="overlay-color" style={{ background: scoreboard.TeamColor2, border: 'none', width: 12, height: '100%', margin: 0, borderRadius: '2px 0 0 2px' }} />
-              <div className="overlay-color" style={{ background: (scoreboard.TeamAccent2 && /^#[0-9A-Fa-f]{6}$/.test(scoreboard.TeamAccent2) && scoreboard.TeamAccent2.toLowerCase() !== scoreboard.TeamColor2?.toLowerCase()) ? scoreboard.TeamAccent2 : scoreboard.TeamColor2, border: 'none', width: 8, height: '100%', margin: 0, borderRadius: '0 2px 2px 0' }} />
-            </div>
-            <span className="overlay-team-name" style={{ color: getContrastText(scoreboard.TeamColor2) }}>{scoreboard.TeamName2}</span>
+            <span className="overlay-team-name" style={{ color: getContrastText(scoreboard.TeamColor2), padding: '6px 18px' }}>{scoreboard.TeamName2}</span>
           </div>
-          {/* Separator between Team 2 and first set scores */}
-          <div style={{ width: 1, height: 38, background: '#444', margin: '0 8px', alignSelf: 'center', borderRadius: 1, opacity: 0.7 }} />
+          {/* Only render separator between Team 2 and set scores if not the first set */}
           {[0, 1, 2].map((setIdx, arrIdx, arr) => {
             const team1Score = scores[setIdx * 2];
             const team2Score = scores[setIdx * 2 + 1];
@@ -463,9 +454,11 @@ function OverlayView() {
               team2Score - team1Score >= 2
             ) team2Won = true;
             return (
-              <>
+              <React.Fragment key={setIdx}>
+                {arrIdx > 0 && (
+                  <div style={{ width: 1, height: 38, background: '#444', margin: '0 8px', alignSelf: 'center', borderRadius: 1, opacity: 0.7 }} />
+                )}
                 <div
-                  key={setIdx}
                   className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
                   style={scoreboard.ActiveSet === setIdx
                     ? {
@@ -483,10 +476,7 @@ function OverlayView() {
                     <span style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
                   </span>
                 </div>
-                {arrIdx < arr.length - 1 && (
-                  <div style={{ width: 1, height: 38, background: '#444', margin: '0 8px', alignSelf: 'center', borderRadius: 1, opacity: 0.7 }} />
-                )}
-              </>
+              </React.Fragment>
             );
           })}
         </div>
