@@ -442,6 +442,8 @@ function OverlayView() {
             </div>
             <span className="overlay-team-name" style={{ color: getContrastText('#23272b') }}>{scoreboard.TeamName2}</span>
           </div>
+          {/* Separator between Team 2 and first set scores */}
+          <div style={{ width: 1, height: 38, background: '#444', margin: '0 8px', alignSelf: 'center', borderRadius: 1, opacity: 0.7 }} />
           {[0, 1, 2].map((setIdx, arrIdx, arr) => {
             const team1Score = scores[setIdx * 2];
             const team2Score = scores[setIdx * 2 + 1];
