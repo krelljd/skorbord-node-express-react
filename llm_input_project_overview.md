@@ -53,11 +53,15 @@ This is a volleyball scoreboard application built with Node.js, Express, React, 
 ```
 
 ## Usage
-- Start backend: `cd server && node index.js`
-- Start frontend: `npm run dev`
+- Start backend: `npm run dev --prefix server` (or use VS Code task "Start Backend")
+- Start frontend: `npm run dev --prefix src` (or use VS Code task "Start Frontend")
+- Build frontend: `npm run build --prefix src`
+- Deploy frontend: `./deploy-frontend.sh` (macOS/Linux) or `./deploy-frontend.ps1` (Windows/PowerShell) from project root
 - Access admin: `/score/:sqid`
 - Access overlay: `/board/:sqid`
 
 ## Additional Notes
 - See `scoreboard app specification.md` for business logic and data model details.
 - All code follows modern best practices for accessibility and maintainability.
+- All commands are run from the project root unless otherwise specified.
+- Deployment steps and automation scripts are documented in `deployment_steps.md`.

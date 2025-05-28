@@ -1,6 +1,6 @@
 # Deployment Steps for Skorbord App
 
-This guide explains how to build and deploy both the backend (Node.js/Express) and frontend (React) apps to your Raspberry Pi server (`raspberrypi.local`) using SSH and SCP.
+This guide explains how to build and deploy both the backend (Node.js/Express) and frontend (React) apps to your Raspberry Pi server (`raspberrypi.local`) using SSH and SCP. **All commands should be run from the root of the project.**
 
 ---
 ## 1. Prerequisites
@@ -10,39 +10,64 @@ This guide explains how to build and deploy both the backend (Node.js/Express) a
 - Network access to `raspberrypi.local` from your development machine.
 
 ---
-## 2. Build the Frontend (React)
+## 2. Automated Build & Deploy (Recommended)
+
+You can use the provided scripts to automate the frontend build and deploy process:
+
+- **For macOS/Linux:**
+  ```sh
+  ./deploy-frontend.sh
+  ```
+- **For Windows/PowerShell:**
+  ```powershell
+  ./deploy-frontend.ps1
+  ```
+
+These scripts will:
+- Build the frontend (`src/`)
+- Copy the build output to the Raspberry Pi (`~/skorbord/frontend/`)
+- (You may need to make the shell script executable: `chmod +x deploy-frontend.sh`)
+
+> **Note:** Backend deployment and DB copy are still manual (see below).
+
+---
+## 3. Manual Build & Deploy Steps
+
+### 3.1. Build the Frontend (React)
 
 1. **Install dependencies:**
    ```sh
    cd src
    npm install
+   cd ..
    ```
 
 2. **Build the production frontend:**
    ```sh
-   npm run build
+   npm run --prefix src build
    ```
    This will generate a `dist` (or `build`) folder in `src/` with static files.
 
 ---
-## 3. Prepare the Backend (Node.js/Express)
+## 4. Prepare the Backend (Node.js/Express)
 
 1. **Install backend dependencies:**
    ```sh
-   cd ../server
+   cd server
    npm install
+   cd ..
    ```
 
 2. **(Optional) Test locally:**
    ```sh
-   npm run dev
+   npm run --prefix server dev
    ```
    Ensure the backend works as expected.
 
 ---
-## 4. Deploy to Raspberry Pi
+## 5. Deploy to Raspberry Pi
 
-### 4.1. Copy Files to Raspberry Pi
+### 5.1. Copy Files to Raspberry Pi
 
 1. **Create target directories on the Pi:**
    ```sh
@@ -51,21 +76,21 @@ This guide explains how to build and deploy both the backend (Node.js/Express) a
 
 2. **Copy backend files:**
    ```sh
-   scp -r ../server/* pi@raspberrypi.local:~/skorbord/server/
+   scp -r server/* pi@raspberrypi.local:~/skorbord/server/
    ```
 
 3. **Copy frontend build files:**
    ```sh
-   scp -r ../src/dist/* pi@raspberrypi.local:~/skorbord/frontend/
+   scp -r src/dist/* pi@raspberrypi.local:~/skorbord/frontend/
    ```
    > If your build output is in `build/` instead of `dist/`, adjust the path accordingly.
 
 4. **Copy the SQLite database (if needed):**
    ```sh
-   scp ../server/scoreboards.db pi@raspberrypi.local:~/skorbord/server/
+   scp server/scoreboards.db pi@raspberrypi.local:~/skorbord/server/
    ```
 
-### 4.2. Install Dependencies on the Pi
+### 5.2. Install Dependencies on the Pi
 
 1. **SSH into the Pi:**
    ```sh
@@ -79,7 +104,7 @@ This guide explains how to build and deploy both the backend (Node.js/Express) a
    ```
 
 ---
-## 5. Run the Backend Server
+## 6. Run the Backend Server
 
 1. **Start the backend:**
    ```sh
@@ -95,17 +120,17 @@ This guide explains how to build and deploy both the backend (Node.js/Express) a
    - Use a static file server (e.g., `serve`, `http-server`, or configure Express to serve static files from `../frontend`).
 
 ---
-## 6. (Optional) Automate with a Script
+## 7. (Optional) Automate with a Script
 
-- You can create a shell script to automate the build and deploy steps.
+- You can create a shell script to automate the build and deploy steps, or use the provided `deploy-frontend.sh`/`deploy-frontend.ps1` scripts for the frontend.
 
 ---
-## 7. (Optional) Set Up as a Service
+## 8. (Optional) Set Up as a Service
 
 - For production, consider using `pm2` or a systemd service to keep the backend running.
 
 ---
-## 8. Set Up as a systemd Service
+## 9. Set Up as a systemd Service
 
 You can run both backend and frontend as systemd services on your Raspberry Pi for automatic startup and management.
 
@@ -186,3 +211,4 @@ WantedBy=multi-user.target
 - Install backend dependencies on Pi  
 - Start backend server  
 - Serve frontend static files as needed
+- **Automated:** Use `deploy-frontend.sh` or `deploy-frontend.ps1` from the project root for the frontend
