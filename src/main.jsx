@@ -484,7 +484,18 @@ function OverlayView() {
             );
           })}
         </div>
-        <div className="overlay-tournament">{scoreboard.Tournament}</div>
+        <div className="overlay-tournament" style={{
+          background: '#181c1f', // black/dark background
+          borderTop: '3px solid var(--team1)', // teal accent border
+          color: '#fff',
+          fontWeight: 600,
+          fontSize: '0.8em',
+          textAlign: 'center',
+          padding: '5px 0',
+          letterSpacing: 1,
+          width: '100%',
+          boxShadow: '0 -2px 8px #00adb522',
+        }}>{scoreboard.Tournament}</div>
       </div>
     </div>
   );
