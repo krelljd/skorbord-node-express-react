@@ -6,6 +6,7 @@ const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const Sqids = require('sqids').default;
 const rateLimit = require('express-rate-limit');
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
@@ -42,8 +43,19 @@ db.serialize(() => {
   )`);
 });
 
-// Sqids setup
-const sqids = new Sqids({ minLength: 6, alphabet: 'hPrUuF3oQfeEGwRZX1d9ac5MB0AkgLqlynOpTVzCWJtDjsN8I7i42xvHSK6Ymb' });
+// Sqids setup (use env vars for security)
+// Add to your .env file:
+// SQIDS_ALPHABET=your-long-random-alphabet
+// SQIDS_MIN_LENGTH=6
+const SQIDS_ALPHABET = process.env.SQIDS_ALPHABET;
+const SQIDS_MIN_LENGTH = parseInt(process.env.SQIDS_MIN_LENGTH, 10);
+if (!SQIDS_ALPHABET || typeof SQIDS_ALPHABET !== 'string' || SQIDS_ALPHABET.length < 20) {
+  throw new Error('Missing or invalid SQIDS_ALPHABET env variable. Set a long, random string in your .env file.');
+}
+if (!SQIDS_MIN_LENGTH || isNaN(SQIDS_MIN_LENGTH) || SQIDS_MIN_LENGTH < 4) {
+  throw new Error('Missing or invalid SQIDS_MIN_LENGTH env variable. Set a number >= 4 in your .env file.');
+}
+const sqids = new Sqids({ minLength: SQIDS_MIN_LENGTH, alphabet: SQIDS_ALPHABET });
 
 // CORS policy: allow localhost for dev, skorbord.app for prod
 const allowedOrigins = [
