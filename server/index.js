@@ -71,6 +71,29 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// --- Input validation helper ---
+function validateScoreboardInput(body) {
+  const errors = [];
+  // Team names: string, max 40 chars
+  if (typeof body.TeamName1 !== 'string' || body.TeamName1.length > 40) errors.push('Invalid TeamName1');
+  if (typeof body.TeamName2 !== 'string' || body.TeamName2.length > 40) errors.push('Invalid TeamName2');
+  // Colors: hex string, 4-9 chars
+  const colorRe = /^#[0-9a-fA-F]{3,8}$/;
+  if (!colorRe.test(body.TeamColor1)) errors.push('Invalid TeamColor1');
+  if (!colorRe.test(body.TeamAccent1)) errors.push('Invalid TeamAccent1');
+  if (!colorRe.test(body.TeamColor2)) errors.push('Invalid TeamColor2');
+  if (!colorRe.test(body.TeamAccent2)) errors.push('Invalid TeamAccent2');
+  // Tournament: string, max 60 chars
+  if (typeof body.Tournament !== 'string' || body.Tournament.length > 60) errors.push('Invalid Tournament');
+  // BoardColor: hex string or empty
+  if (body.BoardColor && !colorRe.test(body.BoardColor)) errors.push('Invalid BoardColor');
+  // Scores: comma-separated numbers, 6 values
+  if (typeof body.Scores !== 'string' || !/^\d{1,2},\d{1,2},\d{1,2},\d{1,2},\d{1,2},\d{1,2}$/.test(body.Scores)) errors.push('Invalid Scores');
+  // ActiveSet: 0, 1, or 2
+  if (![0,1,2].includes(body.ActiveSet)) errors.push('Invalid ActiveSet');
+  return errors;
+}
+
 // REST API: Get scoreboard by Sqid
 app.get('/api/scoreboard/:sqid', (req, res) => {
   const id = sqids.decode(req.params.sqid)[0];
@@ -87,6 +110,8 @@ app.get('/api/scoreboard/:sqid', (req, res) => {
 
 // REST API: Create new scoreboard
 app.post('/api/scoreboard', (req, res) => {
+  const errors = validateScoreboardInput(req.body);
+  if (errors.length) return res.status(400).json({ error: errors.join(', ') });
   const { TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet } = req.body;
   db.run(
     'INSERT INTO scoreboards (TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -104,6 +129,8 @@ app.post('/api/scoreboard', (req, res) => {
 
 // REST API: Update scoreboard
 app.put('/api/scoreboard/:sqid', (req, res) => {
+  const errors = validateScoreboardInput(req.body);
+  if (errors.length) return res.status(400).json({ error: errors.join(', ') });
   const id = sqids.decode(req.params.sqid)[0];
   if (!id) return res.status(404).json({ error: 'Invalid Sqid' });
   const { TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores, ActiveSet } = req.body;
