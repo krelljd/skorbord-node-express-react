@@ -301,7 +301,16 @@ function AdminView() {
                   placeholder="Team 1 Name"
                   aria-label="Edit Team 1 Name"
                   style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team1)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
+                  ref={el => { if (el && edit._focusTeam1) { el.focus(); setEdit(edit => ({ ...edit, _focusTeam1: false })); } }}
                 />
+                <button
+                  type="button"
+                  style={{ background: '#eee', color: 'var(--team1)', border: 'none', borderRadius: 6, fontWeight: 500, fontSize: 13, padding: '4px 10px', marginBottom: 6, marginLeft: 4, cursor: 'pointer' }}
+                  onClick={() => setEdit(edit => ({ ...edit, TeamName1: '', _focusTeam1: true }))}
+                  aria-label="Clear Team 1 Name"
+                >
+                  Clear
+                </button>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
                   <label style={{ fontSize: 13, color: 'var(--team1)' }}>
                     Main Color
@@ -319,7 +328,16 @@ function AdminView() {
                   placeholder="Team 2 Name"
                   aria-label="Edit Team 2 Name"
                   style={{ fontWeight: 600, fontSize: 16, border: 'none', borderBottom: '2px solid var(--team2)', outline: 'none', background: 'var(--input-bg)', minWidth: 80, color: 'var(--text)', marginBottom: 6 }}
+                  ref={el => { if (el && edit._focusTeam2) { el.focus(); setEdit(edit => ({ ...edit, _focusTeam2: false })); } }}
                 />
+                <button
+                  type="button"
+                  style={{ background: '#eee', color: 'var(--team2)', border: 'none', borderRadius: 6, fontWeight: 500, fontSize: 13, padding: '4px 10px', marginBottom: 6, marginLeft: 4, cursor: 'pointer' }}
+                  onClick={() => setEdit(edit => ({ ...edit, TeamName2: '', _focusTeam2: true }))}
+                  aria-label="Clear Team 2 Name"
+                >
+                  Clear
+                </button>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
                   <label style={{ fontSize: 13, color: 'var(--team2)' }}>
                     Main Color
