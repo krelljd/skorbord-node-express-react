@@ -93,6 +93,24 @@ function useSocket(sqid, setScoreboard) {
   }, [sqid, setScoreboard]);
 }
 
+// --- Utility: Throttle function ---
+function throttle(fn, wait) {
+  let last = 0, timeout;
+  return function(...args) {
+    const now = Date.now();
+    if (now - last >= wait) {
+      last = now;
+      fn.apply(this, args);
+    } else {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        last = Date.now();
+        fn.apply(this, args);
+      }, wait - (now - last));
+    }
+  };
+}
+
 // --- AdminView ---
 function AdminView() {
   const { sqid } = useParams();
@@ -177,6 +195,11 @@ function AdminView() {
     });
   };
 
+  // Throttled versions of update functions
+  const throttledUpdateScore = throttle(updateScore, 400);
+  const throttledUpdateActiveSet = throttle(updateActiveSet, 400);
+  const throttledSaveTeamInfo = throttle(saveTeamInfo, 800);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (!scoreboard) return <div>Not found</div>;
@@ -230,7 +253,7 @@ function AdminView() {
                       transition: 'box-shadow 0.2s',
                       opacity: scoreboard.ActiveSet === setIdx ? 0.85 : 1 // less prominent
                     }}
-                    onClick={() => updateActiveSet(setIdx)}
+                    onClick={() => throttledUpdateActiveSet(setIdx)}
                     aria-label={`Set active set to ${setIdx + 1}`}
                   >
                     {scoreboard.ActiveSet === setIdx ? 'Active' : 'Set Active'}
@@ -240,7 +263,7 @@ function AdminView() {
                 <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team1)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName1}</div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, marginBottom: 14 }}>
                   <button
-                    onClick={() => updateScore(setIdx, 0, -1)}
+                    onClick={() => throttledUpdateScore(setIdx, 0, -1)}
                     style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e0f7fa', color: 'var(--team1)', border: 'none', borderRadius: 22, fontWeight: 700, marginRight: 2, boxShadow: '0 1px 4px #00adb522', transition: 'background 0.2s' }}
                     aria-label="Decrement Team 1 Score"
                   >
@@ -248,7 +271,7 @@ function AdminView() {
                   </button>
                   <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team1)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2]}</span>
                   <button
-                    onClick={() => updateScore(setIdx, 0, 1)}
+                    onClick={() => throttledUpdateScore(setIdx, 0, 1)}
                     style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team1)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #00adb522', transition: 'background 0.2s' }}
                     aria-label="Increment Team 1 Score"
                   >
@@ -259,7 +282,7 @@ function AdminView() {
                 <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'var(--team2)', marginBottom: 2, textAlign: 'center' }}>{edit.TeamName2}</div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
                   <button
-                    onClick={() => updateScore(setIdx, 1, -1)}
+                    onClick={() => throttledUpdateScore(setIdx, 1, -1)}
                     style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff3e6', color: 'var(--team2)', border: 'none', borderRadius: 22, fontWeight: 700, marginRight: 2, boxShadow: '0 1px 4px #ff6f3c22', transition: 'background 0.2s' }}
                     aria-label="Decrement Team 2 Score"
                   >
@@ -267,7 +290,7 @@ function AdminView() {
                   </button>
                   <span style={{ fontWeight: 700, fontSize: '2.2em', color: 'var(--team2)', minWidth: 48, textAlign: 'center' }}>{scores[setIdx * 2 + 1]}</span>
                   <button
-                    onClick={() => updateScore(setIdx, 1, 1)}
+                    onClick={() => throttledUpdateScore(setIdx, 1, 1)}
                     style={{ width: 80, height: 64, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--team2)', color: '#fff', border: 'none', borderRadius: 22, fontWeight: 700, marginLeft: 2, boxShadow: '0 1px 4px #ff6f3c22', transition: 'background 0.2s' }}
                     aria-label="Increment Team 2 Score"
                   >
@@ -292,7 +315,7 @@ function AdminView() {
             <div style={{ width: '100%', maxWidth: 420, padding: 16, background: 'var(--edit-bg)', borderBottomLeftRadius: 8, borderBottomRightRadius: 8, boxShadow: '0 2px 8px var(--edit-shadow)' }}>
               <form
                 style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'stretch', justifyContent: 'center', width: '100%' }}
-                onSubmit={e => { e.preventDefault(); saveTeamInfo(); }}
+                onSubmit={e => { e.preventDefault(); throttledSaveTeamInfo(); }}
               >
                 <input
                   type="text"

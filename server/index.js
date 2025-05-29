@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const Sqids = require('sqids').default;
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const server = http.createServer(app);
@@ -12,6 +13,16 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(cors());
 app.use(express.json());
+
+// Rate limiting middleware for API
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+app.use('/api/', apiLimiter);
 
 // SQLite setup
 const db = new sqlite3.Database('./scoreboards.db');
@@ -82,6 +93,21 @@ app.put('/api/scoreboard/:sqid', (req, res) => {
       res.json({ success: true });
     }
   );
+});
+
+// Socket.IO connection rate limiting (basic)
+const socketConnectionCounts = {};
+io.use((socket, next) => {
+  const ip = socket.handshake.address;
+  const now = Date.now();
+  if (!socketConnectionCounts[ip]) socketConnectionCounts[ip] = [];
+  // Remove timestamps older than 15 min
+  socketConnectionCounts[ip] = socketConnectionCounts[ip].filter(ts => now - ts < 15 * 60 * 1000);
+  if (socketConnectionCounts[ip].length >= 30) {
+    return next(new Error('Too many socket connections from this IP.'));
+  }
+  socketConnectionCounts[ip].push(now);
+  next();
 });
 
 // Socket.IO events for real-time updates
