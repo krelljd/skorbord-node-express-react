@@ -106,6 +106,35 @@ function validateScoreboardInput(body) {
   return errors;
 }
 
+// --- Socket.IO payload validation helpers ---
+function isValidSqid(sqid) {
+  // Sqids are alphanumeric, length >= SQIDS_MIN_LENGTH
+  return typeof sqid === 'string' && sqid.length >= SQIDS_MIN_LENGTH && /^[a-zA-Z0-9]+$/.test(sqid);
+}
+function isValidScores(scores) {
+  // Scores: comma-separated numbers, 6 values
+  return typeof scores === 'string' && /^\d{1,2},\d{1,2},\d{1,2},\d{1,2},\d{1,2},\d{1,2}$/.test(scores);
+}
+function isValidTeamInfo(obj) {
+  const colorRe = /^#[0-9a-fA-F]{3,8}$/;
+  return obj &&
+    typeof obj.team1 === 'string' && obj.team1.length <= 40 &&
+    typeof obj.team2 === 'string' && obj.team2.length <= 40 &&
+    colorRe.test(obj.team1Color) &&
+    colorRe.test(obj.team1Accent) &&
+    colorRe.test(obj.team2Color) &&
+    colorRe.test(obj.team2Accent);
+}
+function isValidDisplay(obj) {
+  const colorRe = /^#[0-9a-fA-F]{3,8}$/;
+  return obj &&
+    typeof obj.tournament === 'string' && obj.tournament.length <= 60 &&
+    (!obj.boardColor || colorRe.test(obj.boardColor));
+}
+function isValidSetIndex(idx) {
+  return [0, 1, 2].includes(idx);
+}
+
 // REST API: Get scoreboard by Sqid
 app.get('/api/scoreboard/:sqid', (req, res) => {
   const id = sqids.decode(req.params.sqid)[0];
@@ -177,20 +206,45 @@ io.use((socket, next) => {
 // Socket.IO events for real-time updates
 io.on('connection', (socket) => {
   socket.on('joinBoard', (sqid) => {
+    if (!isValidSqid(sqid)) {
+      socket.emit('error', { error: 'Invalid Sqid for joinBoard' });
+      return;
+    }
     socket.join(sqid);
   });
 
   socket.on('UpdateScores', ({ sqid, scores }) => {
+    if (!isValidSqid(sqid) || !isValidScores(scores)) {
+      socket.emit('error', { error: 'Invalid payload for UpdateScores' });
+      return;
+    }
     io.to(sqid).emit('UpdateScores', scores);
   });
-  socket.on('UpdateTeamInfo', ({ sqid, team1, team1Color, team1Accent, team2, team2Color, team2Accent }) => {
+
+  socket.on('UpdateTeamInfo', (payload) => {
+    if (!isValidSqid(payload.sqid) || !isValidTeamInfo(payload)) {
+      socket.emit('error', { error: 'Invalid payload for UpdateTeamInfo' });
+      return;
+    }
+    const { sqid, team1, team1Color, team1Accent, team2, team2Color, team2Accent } = payload;
     io.to(sqid).emit('UpdateTeamInfo', { team1, team1Color, team1Accent, team2, team2Color, team2Accent });
   });
-  socket.on('UpdateDisplay', ({ sqid, tournament, boardColor }) => {
+
+  socket.on('UpdateDisplay', (payload) => {
+    if (!isValidSqid(payload.sqid) || !isValidDisplay(payload)) {
+      socket.emit('error', { error: 'Invalid payload for UpdateDisplay' });
+      return;
+    }
+    const { sqid, tournament, boardColor } = payload;
     io.to(sqid).emit('UpdateDisplay', { tournament, boardColor });
   });
-  socket.on('UpdateActiveSet', ({ sqid, setIndex }) => {
-    io.to(sqid).emit('UpdateActiveSet', setIndex);
+
+  socket.on('UpdateActiveSet', (payload) => {
+    if (!isValidSqid(payload.sqid) || !isValidSetIndex(payload.setIndex)) {
+      socket.emit('error', { error: 'Invalid payload for UpdateActiveSet' });
+      return;
+    }
+    io.to(payload.sqid).emit('UpdateActiveSet', payload.setIndex);
   });
 });
 
