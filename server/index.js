@@ -11,7 +11,6 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-app.use(cors());
 app.use(express.json());
 
 // Rate limiting middleware for API
@@ -45,6 +44,32 @@ db.serialize(() => {
 
 // Sqids setup
 const sqids = new Sqids({ minLength: 6, alphabet: 'hPrUuF3oQfeEGwRZX1d9ac5MB0AkgLqlynOpTVzCWJtDjsN8I7i42xvHSK6Ymb' });
+
+// CORS policy: allow localhost for dev, skorbord.app for prod
+const allowedOrigins = [
+  'http://localhost:5173', // Vite default
+  'http://localhost:3000', // Common React dev
+  'http://localhost:4000', // Backend dev
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:4000', // Backend dev
+  'https://skorbord.app'
+];
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+app.use(cors(corsOptions));
 
 // REST API: Get scoreboard by Sqid
 app.get('/api/scoreboard/:sqid', (req, res) => {
