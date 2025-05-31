@@ -400,6 +400,18 @@ function AdminView() {
   );
 }
 
+// List of subtle cubic-bezier easings for in/out
+const sweepEasings = [
+  'cubic-bezier(0.4,0,0.2,1)', // standard
+  'cubic-bezier(0.55,0,0.1,1)', // easeInOut
+  'cubic-bezier(0.77,0,0.175,1)', // easeInOutQuart
+  'cubic-bezier(0.65,0,0.35,1)', // easeInOutSine
+  'cubic-bezier(0.86,0,0.07,1)', // easeInOutCirc
+  'cubic-bezier(0.47,0,0.745,0.715)', // easeInQuad
+  'cubic-bezier(0.39,0.575,0.565,1)', // easeOutQuad
+  'cubic-bezier(0.445,0.05,0.55,0.95)', // easeInOut
+];
+
 function OverlayView() {
   const { sqid } = useParams();
   const [scoreboard, setScoreboard] = useState(null);
@@ -411,17 +423,9 @@ function OverlayView() {
   const [sweepKey, setSweepKey] = useState(0);
   const [sweepEasing, setSweepEasing] = useState('cubic-bezier(0.4,0,0.2,1)');
 
-  // List of subtle cubic-bezier easings for in/out
-  const sweepEasings = [
-    'cubic-bezier(0.4,0,0.2,1)', // standard
-    'cubic-bezier(0.55,0,0.1,1)', // easeInOut
-    'cubic-bezier(0.77,0,0.175,1)', // easeInOutQuart
-    'cubic-bezier(0.65,0,0.35,1)', // easeInOutSine
-    'cubic-bezier(0.86,0,0.07,1)', // easeInOutCirc
-    'cubic-bezier(0.47,0,0.745,0.715)', // easeInQuad
-    'cubic-bezier(0.39,0.575,0.565,1)', // easeOutQuad
-    'cubic-bezier(0.445,0.05,0.55,0.95)', // easeInOut
-  ];
+  // Fade animation state for scores
+  const [scoreFade, setScoreFade] = useState([false, false, false, false, false, false]);
+  const prevScoresRef = React.useRef([0, 0, 0, 0, 0, 0]);
 
   useEffect(() => {
     fetch(`${API_BASE}/scoreboard/${sqid}`)
@@ -455,6 +459,24 @@ function OverlayView() {
     startSweep();
     return () => clearTimeout(timeout);
   }, []);
+
+  // Fade in/out effect for score changes
+  useEffect(() => {
+    if (!scoreboard) return;
+    const scores = scoreboard.Scores.split(',').map(Number);
+    const prev = prevScoresRef.current;
+    let changed = [false, false, false, false, false, false];
+    for (let i = 0; i < 6; ++i) {
+      if (scores[i] !== prev[i]) {
+        changed[i] = true;
+      }
+    }
+    if (changed.some(Boolean)) {
+      setScoreFade(changed);
+      setTimeout(() => setScoreFade([false, false, false, false, false, false]), 180); // <200ms
+    }
+    prevScoresRef.current = scores;
+  }, [scoreboard && scoreboard.Scores]);
 
   useEffect(() => {
   }, [scoreboard]);
@@ -563,17 +585,18 @@ function OverlayView() {
                   style={scoreboard.ActiveSet === setIdx
                     ? {
                         border: 'none',
-                        background: 'transparent', // fully transparent
+                        background: 'transparent',
                         color: '#fff',
                         opacity: 1,
-                        filter: 'none'
+                        filter: 'none',
+                        transition: 'opacity 180ms cubic-bezier(0.4,0,0.2,1)',
                       }
-                    : { background: 'transparent', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
+                    : { background: 'transparent', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)', transition: 'opacity 180ms cubic-bezier(0.4,0,0.2,1)' }}
                 >
                   <span className="overlay-score">
-                    <span style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
+                    <span className={scoreFade[setIdx*2] ? 'score-fade' : ''} style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
                     <span className="overlay-score-sep">-</span>
-                    <span style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
+                    <span className={scoreFade[setIdx*2+1] ? 'score-fade' : ''} style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
                   </span>
                 </div>
               </React.Fragment>
@@ -616,6 +639,19 @@ if (typeof window !== 'undefined' && !document.getElementById('overlayLightMove-
   90% { opacity: 0.0; }
   100% { background-position: -120% 0%; opacity: 0.0; }
 }`;
+  document.head.appendChild(style);
+}
+
+// Add CSS for score-fade
+if (typeof window !== 'undefined' && !document.getElementById('score-fade-keyframes')) {
+  const style = document.createElement('style');
+  style.id = 'score-fade-keyframes';
+  style.innerHTML = `
+.score-fade {
+  opacity: 0.3 !important;
+  transition: opacity 180ms cubic-bezier(0.4,0,0.2,1) !important;
+}
+`;
   document.head.appendChild(style);
 }
 
