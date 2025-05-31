@@ -406,6 +406,23 @@ function OverlayView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // State for randomized sweep duration, animation key, and easing
+  const [sweepDuration, setSweepDuration] = useState(10); // default 10s
+  const [sweepKey, setSweepKey] = useState(0);
+  const [sweepEasing, setSweepEasing] = useState('cubic-bezier(0.4,0,0.2,1)');
+
+  // List of subtle cubic-bezier easings for in/out
+  const sweepEasings = [
+    'cubic-bezier(0.4,0,0.2,1)', // standard
+    'cubic-bezier(0.55,0,0.1,1)', // easeInOut
+    'cubic-bezier(0.77,0,0.175,1)', // easeInOutQuart
+    'cubic-bezier(0.65,0,0.35,1)', // easeInOutSine
+    'cubic-bezier(0.86,0,0.07,1)', // easeInOutCirc
+    'cubic-bezier(0.47,0,0.745,0.715)', // easeInQuad
+    'cubic-bezier(0.39,0.575,0.565,1)', // easeOutQuad
+    'cubic-bezier(0.445,0.05,0.55,0.95)', // easeInOut
+  ];
+
   useEffect(() => {
     fetch(`${API_BASE}/scoreboard/${sqid}`)
       .then(r => r.json())
@@ -421,6 +438,23 @@ function OverlayView() {
 
   // Use the shared socket hook for real-time updates
   useSocket(sqid, setScoreboard);
+
+  // Randomize sweep duration, easing, and restart animation on each sweep
+  useEffect(() => {
+    let timeout;
+    function startSweep() {
+      // Random duration between 5 and 15 seconds
+      const duration = Math.floor(Math.random() * 11) + 5;
+      // Random easing
+      const easing = sweepEasings[Math.floor(Math.random() * sweepEasings.length)];
+      setSweepDuration(duration);
+      setSweepEasing(easing);
+      setSweepKey(k => k + 1); // force re-render to restart animation
+      timeout = setTimeout(startSweep, duration * 1000);
+    }
+    startSweep();
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
   }, [scoreboard]);
@@ -453,7 +487,46 @@ function OverlayView() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-board" style={{ ...boardStyle, borderRadius: 0, boxShadow: 'none' }}>
+      <div className="overlay-board" style={{ ...boardStyle, borderRadius: 0, boxShadow: 'none', position: 'relative', overflow: 'hidden', zIndex: 1 }}>
+        {/* Animated background gradient/light effect (must be first child for stacking) */}
+        <div
+          className="overlay-animated-bg"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 0,
+            pointerEvents: 'none',
+            background: 'linear-gradient(120deg, rgba(0,255,174,0.04) 0%, rgba(0,173,181,0.04) 40%, rgba(255,111,60,0.04) 60%, rgba(255,255,255,0.03) 100%)',
+            backgroundSize: '400% 400%',
+            animation: 'overlayLightMove 24s linear infinite',
+            filter: 'blur(6px)',
+            opacity: 0.5,
+            transition: 'background 0.5s',
+          }}
+        />
+        {/* Subtle moving angled light sweep */}
+        <div
+          key={sweepKey}
+          className="overlay-angled-light"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 1,
+            pointerEvents: 'none',
+            background: 'linear-gradient(100deg, rgba(255,255,255,0) 60%, rgba(255,255,255,0.13) 70%, rgba(255,255,255,0) 80%)',
+            backgroundSize: '200% 200%',
+            animation: `angledLightSweep ${sweepDuration}s ${sweepEasing}`,
+            opacity: 0.35,
+            filter: 'blur(8px)',
+          }}
+        />
+        {/* Overlay content (zIndex: 1 by stacking context) */}
         <div className="overlay-row">
           <div className="overlay-team overlay-team1" style={{ 
             background: `linear-gradient(135deg, ${scoreboard.TeamColor1} 75%, ${scoreboard.TeamAccent1} 100%)`,
@@ -490,12 +563,12 @@ function OverlayView() {
                   style={scoreboard.ActiveSet === setIdx
                     ? {
                         border: 'none',
-                        background: '#23272b',
+                        background: 'transparent', // fully transparent
                         color: '#fff',
                         opacity: 1,
                         filter: 'none'
                       }
-                    : { background: '#23272b', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
+                    : { background: 'transparent', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)' }}
                 >
                   <span className="overlay-score">
                     <span style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
@@ -522,6 +595,28 @@ function OverlayView() {
       </div>
     </div>
   );
+}
+
+// Inject keyframes for the animated background effect
+if (typeof window !== 'undefined' && !document.getElementById('overlayLightMove-keyframes')) {
+  const style = document.createElement('style');
+  style.id = 'overlayLightMove-keyframes';
+  style.innerHTML = `
+@keyframes overlayLightMove {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 100%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 0%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes angledLightSweep {
+  0% { background-position: 120% 0%; opacity: 0.0; }
+  10% { opacity: 0.35; }
+  50% { background-position: -120% 0%; opacity: 0.35; }
+  90% { opacity: 0.0; }
+  100% { background-position: -120% 0%; opacity: 0.0; }
+}`;
+  document.head.appendChild(style);
 }
 
 createRoot(document.getElementById('root')).render(
