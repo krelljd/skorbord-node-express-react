@@ -95,8 +95,8 @@ function validateScoreboardInput(body) {
   if (!colorRe.test(body.TeamAccent1)) errors.push('Invalid TeamAccent1');
   if (!colorRe.test(body.TeamColor2)) errors.push('Invalid TeamColor2');
   if (!colorRe.test(body.TeamAccent2)) errors.push('Invalid TeamAccent2');
-  // Tournament: string, max 60 chars
-  if (typeof body.Tournament !== 'string' || body.Tournament.length > 60) errors.push('Invalid Tournament');
+  // Tournament: string, max 100 chars
+  if (typeof body.Tournament !== 'string' || body.Tournament.length > 100) errors.push('Invalid Tournament');
   // BoardColor: hex string or empty
   if (body.BoardColor && !colorRe.test(body.BoardColor)) errors.push('Invalid BoardColor');
   // Scores: comma-separated numbers, 6 values
@@ -128,7 +128,7 @@ function isValidTeamInfo(obj) {
 function isValidDisplay(obj) {
   const colorRe = /^#[0-9a-fA-F]{3,8}$/;
   return obj &&
-    typeof obj.tournament === 'string' && obj.tournament.length <= 60 &&
+    typeof obj.tournament === 'string' && obj.tournament.length <= 100 &&
     (!obj.boardColor || colorRe.test(obj.boardColor));
 }
 function isValidSetIndex(idx) {
@@ -183,6 +183,32 @@ app.put('/api/scoreboard/:sqid', (req, res) => {
         console.error('PUT /api/scoreboard/:sqid error:', err);
         return res.status(500).json({ error: err.message });
       }
+      // Emit socket events for real-time update
+      const sqid = req.params.sqid;
+      // Emit scores
+      if (typeof Scores === 'string' && /^\d{1,2},\d{1,2},\d{1,2},\d{1,2},\d{1,2},\d{1,2}$/.test(Scores)) {
+        const scoresArray = Scores.split(',').map(Number);
+        io.to(sqid).emit('UpdateScores', scoresArray);
+      }
+      // Emit active set
+      if ([0,1,2].includes(ActiveSet)) {
+        io.to(sqid).emit('UpdateActiveSet', ActiveSet);
+      }
+      // Emit team info
+      io.to(sqid).emit('UpdateTeamInfo', {
+        team1: TeamName1,
+        team1Color: TeamColor1,
+        team1Accent: TeamAccent1,
+        team2: TeamName2,
+        team2Color: TeamColor2,
+        team2Accent: TeamAccent2,
+        tournament: Tournament
+      });
+      // Emit display info
+      io.to(sqid).emit('UpdateDisplay', {
+        tournament: Tournament,
+        boardColor: BoardColor
+      });
       res.json({ success: true });
     }
   );

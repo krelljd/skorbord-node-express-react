@@ -89,7 +89,9 @@ function useSocket(sqid, setScoreboard) {
         BoardColor: payload.boardColor ?? sb.BoardColor
       }));
     });
-    return () => s.disconnect();
+    return () => {
+      s.disconnect();
+    };
   }, [sqid, setScoreboard]);
 }
 
@@ -140,13 +142,7 @@ function AdminView() {
   // Use the shared socket hook for real-time updates
   useSocket(sqid, setScoreboard);
 
-  // Use a local socket for emitting events only
-  const emitSocket = (event, payload) => {
-    const s = io(SOCKET_URL);
-    s.emit('joinBoard', sqid);
-    s.emit(event, payload);
-    setTimeout(() => s.disconnect(), 500); // disconnect after short delay
-  };
+  // Remove emitSocket and all socket emits from update functions
 
   const updateScore = (setIdx, teamIdx, delta) => {
     if (!scoreboard) return;
@@ -159,7 +155,6 @@ function AdminView() {
     fetch(`${API_BASE}/scoreboard/${sqid}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
     });
-    emitSocket('UpdateScores', { sqid, scores });
   };
 
   const updateActiveSet = (setIdx) => {
@@ -169,7 +164,6 @@ function AdminView() {
     fetch(`${API_BASE}/scoreboard/${sqid}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
     });
-    emitSocket('UpdateActiveSet', { sqid, setIndex: setIdx });
   };
 
   const saveTeamInfo = () => {
@@ -179,26 +173,15 @@ function AdminView() {
     fetch(`${API_BASE}/scoreboard/${sqid}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
     });
-    emitSocket('UpdateTeamInfo', {
-      sqid,
-      team1: edit.TeamName1,
-      team1Color: edit.TeamColor1,
-      team1Accent: edit.TeamAccent1,
-      team2: edit.TeamName2,
-      team2Color: edit.TeamColor2,
-      team2Accent: edit.TeamAccent2
-    });
-    emitSocket('UpdateDisplay', {
-      sqid,
-      tournament: edit.Tournament,
-      boardColor: scoreboard.BoardColor
-    });
   };
 
   // Throttled versions of update functions
   const throttledUpdateScore = throttle(updateScore, 400);
   const throttledUpdateActiveSet = throttle(updateActiveSet, 400);
   const throttledSaveTeamInfo = throttle(saveTeamInfo, 800);
+
+  useEffect(() => {
+  }, [scoreboard]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -403,8 +386,6 @@ function AdminView() {
                     fetch(`${API_BASE}/scoreboard/${sqid}`, {
                       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
                     });
-                    emitSocket('UpdateScores', { sqid, scores: [0,0,0,0,0,0] });
-                    emitSocket('UpdateActiveSet', { sqid, setIndex: 0 });
                   }}
                   aria-label="Reset all scores to zero and activate Set 1"
                 >
@@ -440,6 +421,9 @@ function OverlayView() {
 
   // Use the shared socket hook for real-time updates
   useSocket(sqid, setScoreboard);
+
+  useEffect(() => {
+  }, [scoreboard]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
