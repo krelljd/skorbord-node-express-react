@@ -46,7 +46,7 @@ These scripts will:
    ```sh
    npm run --prefix src build
    ```
-   This will generate a `dist` (or `build`) folder in `src/` with static files.
+   This will generate a `dist` folder in `src/` with static files.
 
 ---
 ## 4. Prepare the Backend (Node.js/Express)

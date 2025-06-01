@@ -9,6 +9,8 @@ This is a volleyball scoreboard application built with Node.js, Express, React, 
 - Overlay view for public display, styled for streaming overlays
 - Data persistence with SQLite
 - Secure scoreboard access via unique encoded URL parameter (Sqids)
+- Automated frontend deployment scripts for macOS/Linux and Windows/PowerShell
+- Consistent frontend build output to `dist/` directory
 
 ## Backend (Node.js/Express)
 - Directory: `server/`
@@ -28,6 +30,8 @@ This is a volleyball scoreboard application built with Node.js, Express, React, 
 - All font sizes use relative units (em)
 - Tournament name updates in real time
 - White and black are allowed as accent colors
+- Uses REST and WebSocket APIs for all scoreboard data operations
+- Uses `dist/` as the build output directory for deployment
 
 ## Data Model
 - Scoreboard: TeamName1, TeamName2, TeamColor1, TeamAccent1, TeamColor2, TeamAccent2, Tournament, BoardColor, Scores (CSV), ActiveSet, Sqid
@@ -55,7 +59,7 @@ This is a volleyball scoreboard application built with Node.js, Express, React, 
 ## Usage
 - Start backend: `npm run dev --prefix server` (or use VS Code task "Start Backend")
 - Start frontend: `npm run dev --prefix src` (or use VS Code task "Start Frontend")
-- Build frontend: `npm run build --prefix src`
+- Build frontend: `npm run build --prefix src` (output in `src/dist/`)
 - Deploy frontend: `./deploy-frontend.sh` (macOS/Linux) or `./deploy-frontend.ps1` (Windows/PowerShell) from project root
 - Access admin: `/score/:sqid`
 - Access overlay: `/board/:sqid`
@@ -65,3 +69,4 @@ This is a volleyball scoreboard application built with Node.js, Express, React, 
 - All code follows modern best practices for accessibility and maintainability.
 - All commands are run from the project root unless otherwise specified.
 - Deployment steps and automation scripts are documented in `deployment_steps.md`.
+- See `code_map.json` for a machine-readable project structure and dependency map.

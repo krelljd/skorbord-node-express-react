@@ -1,0 +1,60 @@
+{
+  "project": "skorbord-node-express-react",
+  "description": "A volleyball scoreboard app with real-time updates, REST and WebSocket APIs, and a React frontend.",
+  "main_technologies": [
+    "Node.js", "Express", "React", "Socket.IO", "SQLite"
+  ],
+  "structure": {
+    "server/": {
+      "purpose": "Backend API and WebSocket server, data persistence.",
+      "main_files": [
+        "index.js",
+        "scoreboards.db",
+        "sqids.test.js",
+        "package.json"
+      ],
+      "dependencies": [
+        "express", "socket.io", "sqlite3", "sqids" ],
+      "exports": [
+        "REST API at /api/scoreboard/:sqid",
+        "WebSocket events: joinBoard, UpdateScores, UpdateActiveSet, UpdateTeamInfo, UpdateDisplay"
+      ],
+      "relationships": {
+        "scoreboards.db": "SQLite database for scoreboard state",
+        "index.js": "Main server entry, sets up API and WebSocket logic"
+      }
+    },
+    "src/": {
+      "purpose": "Frontend React app for admin/operator and overlay views.",
+      "main_files": [
+        "main.jsx", "App.jsx", "index.css", "App.css"
+      ],
+      "dependencies": [
+        "react", "react-dom", "react-router-dom", "socket.io-client" ],
+      "exports": [
+        "AdminView (score/:sqid)",
+        "OverlayView (board/:sqid)",
+        "App (/)"
+      ],
+      "relationships": {
+        "main.jsx": "Entry point, routing, hooks for API/socket, renders views.",
+        "App.jsx": "Landing page or shared logic for the app.",
+        "index.css/App.css": "Styling for the frontend."
+      }
+    }
+  },
+  "routing": {
+    "/": "App.jsx (landing or info)",
+    "/score/:sqid": "AdminView (edit/update scoreboard)",
+    "/board/:sqid": "OverlayView (public/stream display)"
+  },
+  "data_flow": {
+    "REST API": "CRUD scoreboard state, used by frontend for updates.",
+    "WebSocket": "Real-time push of scoreboard changes to all clients of a board.",
+    "Sqids": "Short unique IDs for secure scoreboard access."
+  },
+  "llm_guidance": {
+    "backend": "Follow scoreboard app specification.md for business logic and data model. Use REST and WebSocket APIs for all scoreboard data operations.",
+    "frontend": "Use hooks in main.jsx for API/socket. AdminView for editing, OverlayView for display. Style overlay for streaming embedding."
+  }
+}
