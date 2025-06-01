@@ -443,8 +443,8 @@ function OverlayView() {
   useEffect(() => {
     let timeout;
     function startSweep() {
-      // Random duration between 5 and 15 seconds
-      const duration = Math.floor(Math.random() * 11) + 5;
+      // Slow sweep: random duration between 12 and 24 seconds
+      const duration = Math.floor(Math.random() * 13) + 12;
       // Random easing
       const easing = sweepEasings[Math.floor(Math.random() * sweepEasings.length)];
       setSweepDuration(duration);
