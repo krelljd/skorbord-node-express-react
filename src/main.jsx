@@ -447,8 +447,8 @@ function OverlayView() {
   useEffect(() => {
     let timeout;
     function startSweep() {
-      // Slow sweep: random duration between 12 and 24 seconds
-      const duration = Math.floor(Math.random() * 13) + 12;
+      // Slow sweep: random duration between 24 and 40 seconds
+      const duration = Math.floor(Math.random() * 17) + 24;
       // Random easing
       const easing = sweepEasings[Math.floor(Math.random() * sweepEasings.length)];
       setSweepDuration(duration);
@@ -510,6 +510,8 @@ function OverlayView() {
   return (
     <div className="overlay-root">
       <div className="overlay-board" style={{ ...boardStyle, borderRadius: 0, boxShadow: 'none', position: 'relative', overflow: 'hidden', zIndex: 1 }}>
+        {/* Parallax background layer */}
+        <div className="overlay-parallax-bg" />
         {/* Animated background gradient/light effect (must be first child for stacking) */}
         <div
           className="overlay-animated-bg"
@@ -529,6 +531,8 @@ function OverlayView() {
             transition: 'background 0.5s',
           }}
         />
+        {/* Shimmer effect layer */}
+        <div className="overlay-shimmer" />
         {/* Subtle moving angled light sweep */}
         <div
           key={sweepKey}
@@ -638,7 +642,39 @@ if (typeof window !== 'undefined' && !document.getElementById('overlayLightMove-
   50% { background-position: -120% 0%; opacity: 0.35; }
   90% { opacity: 0.0; }
   100% { background-position: -120% 0%; opacity: 0.0; }
-}`;
+}
+@keyframes overlayParallax {
+  0% { transform: translateY(0px) scale(1.01); }
+  50% { transform: translateY(10px) scale(1.03); }
+  100% { transform: translateY(0px) scale(1.01); }
+}
+@keyframes overlayShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.overlay-parallax-bg {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(0,255,174,0.06) 0%, rgba(0,173,181,0.06) 40%, rgba(255,111,60,0.06) 60%, rgba(255,255,255,0.04) 100%);
+  background-size: 400% 400%;
+  filter: blur(10px);
+  opacity: 0.35;
+  animation: overlayParallax 36s ease-in-out infinite;
+}
+.overlay-shimmer {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(255,255,255,0) 60%, rgba(255,255,255,0.18) 70%, rgba(255,255,255,0) 80%);
+  background-size: 300% 100%;
+  opacity: 0.18;
+  filter: blur(4px);
+  animation: overlayShimmer 18s linear infinite;
+}
+`;
   document.head.appendChild(style);
 }
 
