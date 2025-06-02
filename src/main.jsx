@@ -292,7 +292,7 @@ function AdminView() {
             aria-expanded={showEdit}
           >
             <span style={{ marginRight: 8 }}>{showEdit ? 'Hide' : 'Show'} Match Info</span>
-            <span style={{ fontSize: 18 }}>{showEdit ? '\u25B2' : '\u25BC'}</span>
+            <span style={{ fontSize: 18 }}>{showEdit ? '\u25BC' : '\u25B2'}</span>
           </button>
           {showEdit && (
             <div style={{ width: '100%', maxWidth: 420, padding: 16, background: 'var(--edit-bg)', borderBottomLeftRadius: 8, borderBottomRightRadius: 8, boxShadow: '0 2px 8px var(--edit-shadow)' }}>
