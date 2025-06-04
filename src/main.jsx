@@ -423,8 +423,8 @@ function OverlayView() {
   const [sweepKey, setSweepKey] = useState(0);
   const [sweepEasing, setSweepEasing] = useState('cubic-bezier(0.4,0,0.2,1)');
 
-  // Fade animation state for scores
-  const [scoreFade, setScoreFade] = useState([false, false, false, false, false, false]);
+  // Animation state for scores
+  const [scoreAnim, setScoreAnim] = useState([null, null, null, null, null, null]); // {prev, next, dir}
   const prevScoresRef = React.useRef([0, 0, 0, 0, 0, 0]);
 
   useEffect(() => {
@@ -460,20 +460,20 @@ function OverlayView() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Fade in/out effect for score changes
+  // Animation effect for score changes
   useEffect(() => {
     if (!scoreboard) return;
     const scores = scoreboard.Scores.split(',').map(Number);
     const prev = prevScoresRef.current;
-    let changed = [false, false, false, false, false, false];
+    let animArr = [null, null, null, null, null, null];
     for (let i = 0; i < 6; ++i) {
       if (scores[i] !== prev[i]) {
-        changed[i] = true;
+        animArr[i] = { prev: prev[i], next: scores[i], dir: scores[i] > prev[i] ? 1 : -1 };
       }
     }
-    if (changed.some(Boolean)) {
-      setScoreFade(changed);
-      setTimeout(() => setScoreFade([false, false, false, false, false, false]), 180); // <200ms
+    setScoreAnim(animArr);
+    if (animArr.some(Boolean)) {
+      setTimeout(() => setScoreAnim([null, null, null, null, null, null]), 350);
     }
     prevScoresRef.current = scores;
   }, [scoreboard && scoreboard.Scores]);
@@ -553,7 +553,7 @@ function OverlayView() {
           }}
         />
         {/* Overlay content (zIndex: 1 by stacking context) */}
-        <div className="overlay-row">
+        <div className="overlay-row" style={{ display: 'flex', alignItems: 'stretch', width: '100%' }}>
           <div className="overlay-team overlay-team1" style={{ 
             background: `linear-gradient(135deg, ${scoreboard.TeamColor1} 75%, ${scoreboard.TeamAccent1} 100%)`,
             display: 'flex', alignItems: 'center', padding: 0 }}>
@@ -564,48 +564,108 @@ function OverlayView() {
             display: 'flex', alignItems: 'center', padding: 0 }}>
             <span className="overlay-team-name" style={{ color: getContrastText(scoreboard.TeamColor2), padding: '6px 18px' }}>{scoreboard.TeamName2}</span>
           </div>
-          {/* Only render separator between Team 2 and set scores if not the first set */}
-          {[0, 1, 2].map((setIdx, arrIdx, arr) => {
-            const team1Score = scores[setIdx * 2];
-            const team2Score = scores[setIdx * 2 + 1];
-            const setTarget = setIdx === 2 ? 15 : 25;
-            // Determine if either team has won the set
-            let team1Won = false, team2Won = false;
-            if (
-              team1Score >= setTarget &&
-              team1Score - team2Score >= 2
-            ) team1Won = true;
-            if (
-              team2Score >= setTarget &&
-              team2Score - team1Score >= 2
-            ) team2Won = true;
-            return (
-              <React.Fragment key={setIdx}>
-                {arrIdx > 0 && (
-                  <div style={{ width: 1, height: 38, background: '#444', margin: '0 8px', alignSelf: 'center', borderRadius: 1, opacity: 0.7 }} />
-                )}
-                <div
-                  className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
-                  style={scoreboard.ActiveSet === setIdx
-                    ? {
-                        border: 'none',
-                        background: 'transparent',
-                        color: '#fff',
-                        opacity: 1,
-                        filter: 'none',
-                        transition: 'opacity 180ms cubic-bezier(0.4,0,0.2,1)',
-                      }
-                    : { background: 'transparent', color: '#aaa', opacity: 0.7, filter: 'grayscale(0.2) brightness(0.95)', transition: 'opacity 180ms cubic-bezier(0.4,0,0.2,1)' }}
-                >
-                  <span className="overlay-score">
-                    <span className={scoreFade[setIdx*2] ? 'score-fade' : ''} style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
-                    <span className="overlay-score-sep">-</span>
-                    <span className={scoreFade[setIdx*2+1] ? 'score-fade' : ''} style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
-                  </span>
-                </div>
-              </React.Fragment>
-            );
-          })}
+          {/* Set scores region, max 50% of overlay row */}
+          <div style={{
+            display: 'flex',
+            flex: '0 1 50%',
+            maxWidth: '50%',
+            minWidth: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            gap: 0,
+          }}>
+            {[0, 1, 2].map((setIdx, arrIdx, arr) => {
+              const team1Score = scores[setIdx * 2];
+              const team2Score = scores[setIdx * 2 + 1];
+              const setTarget = setIdx === 2 ? 15 : 25;
+              // Determine if either team has won the set
+              let team1Won = false, team2Won = false;
+              if (
+                team1Score >= setTarget &&
+                team1Score - team2Score >= 2
+              ) team1Won = true;
+              if (
+                team2Score >= setTarget &&
+                team2Score - team1Score >= 2
+              ) team2Won = true;
+              return (
+                <React.Fragment key={setIdx}>
+                  {arrIdx > 0 && (
+                    <div style={{ width: 1, height: 38, background: '#444', margin: '0 8px', alignSelf: 'center', borderRadius: 1, opacity: 0.7 }} />
+                  )}
+                  <div
+                    className={`overlay-set${scoreboard.ActiveSet === setIdx ? ' active' : ''}`}
+                    style={{
+                      ...(
+                        scoreboard.ActiveSet === setIdx
+                          ? {
+                              border: 'none',
+                              background: 'transparent',
+                              color: '#fff',
+                              opacity: 1,
+                              filter: 'none',
+                              transition: 'opacity 180ms cubic-bezier(0.4,0,0.2,1)',
+                            }
+                          : {
+                              background: 'transparent',
+                              color: '#aaa',
+                              opacity: 0.7,
+                              filter: 'grayscale(0.2) brightness(0.95)',
+                              transition: 'opacity 180ms cubic-bezier(0.4,0,0.2,1)',
+                            }
+                      ),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minWidth: 0,
+                      flex: '1 1 0',
+                      maxWidth: '33.33%', // Each set max 1/3 of set region
+                      overflow: 'hidden',
+                      padding: 0,
+                    }}
+                  >
+                    <span
+                      className="overlay-score"
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        minWidth: 0,
+                        width: '100%',
+                        overflow: 'hidden',
+                        flex: '1 1 0',
+                        fontSize: '2em', // Reduced font size from 2.6em to 2em
+                        fontWeight: 800,
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      <span className="score-anim-wrap" style={{ display: 'inline-block', overflow: 'hidden', width: '6vw', height: '1.2em', verticalAlign: 'middle', textAlign: 'center', position: 'relative', minWidth: 0 }}>
+                        {scoreAnim[setIdx*2] ? (
+                          <>
+                            <span className="score-slide-out" style={{ display: 'block', width: '100%', ...((team1Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2].prev}</span>
+                            <span className="score-slide-in" style={{ display: 'block', width: '100%', ...((team1Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2].next}</span>
+                          </>
+                        ) : (
+                          <span style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
+                        )}
+                      </span>
+                      <span className="overlay-score-sep" style={{ fontWeight: 700, fontSize: '1em', verticalAlign: 'middle', userSelect: 'none', minWidth: 0 }}>-</span>
+                      <span className="score-anim-wrap" style={{ display: 'inline-block', overflow: 'hidden', width: '6vw', height: '1.2em', verticalAlign: 'middle', textAlign: 'center', position: 'relative', minWidth: 0 }}>
+                        {scoreAnim[setIdx*2+1] ? (
+                          <>
+                            <span className="score-slide-out" style={{ display: 'block', width: '100%', ...((team2Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2+1].prev}</span>
+                            <span className="score-slide-in" style={{ display: 'block', width: '100%', ...((team2Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2+1].next}</span>
+                          </>
+                        ) : (
+                          <span style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
+                        )}
+                      </span>
+                    </span>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
         <div className="overlay-tournament" style={{
           background: '#181c1f', // fixed dark background
@@ -678,14 +738,29 @@ if (typeof window !== 'undefined' && !document.getElementById('overlayLightMove-
   document.head.appendChild(style);
 }
 
-// Add CSS for score-fade
-if (typeof window !== 'undefined' && !document.getElementById('score-fade-keyframes')) {
+// Inject keyframes for score slide animation (no absolute positioning)
+if (typeof window !== 'undefined' && !document.getElementById('score-slide-keyframes')) {
   const style = document.createElement('style');
-  style.id = 'score-fade-keyframes';
+  style.id = 'score-slide-keyframes';
   style.innerHTML = `
-.score-fade {
-  opacity: 0.3 !important;
-  transition: opacity 180ms cubic-bezier(0.4,0,0.2,1) !important;
+.score-anim-wrap { display: inline-block; overflow: hidden; width: 2.2em; height: 1.2em; vertical-align: middle; text-align: center; position: relative; }
+.score-slide-out {
+  animation: scoreSlideOut 350ms cubic-bezier(0.4,0,0.2,1) forwards;
+  position: absolute;
+  left: 0; right: 0;
+}
+.score-slide-in {
+  animation: scoreSlideIn 350ms cubic-bezier(0.4,0,0.2,1) forwards;
+  position: absolute;
+  left: 0; right: 0;
+}
+@keyframes scoreSlideOut {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(100%); }
+}
+@keyframes scoreSlideIn {
+  0% { opacity: 0; transform: translateY(-100%); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 `;
   document.head.appendChild(style);

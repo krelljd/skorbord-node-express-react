@@ -1,3 +1,6 @@
+/* Importing Noto Sans and Bebas Neue fonts from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap');
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -130,6 +133,7 @@ button:focus-visible {
   font-size: 1.08em;
   color: #fff;
   letter-spacing: 0.01em;
+  font-family: 'Noto Sans', Arial, Helvetica, sans-serif;
 }
 .overlay-set {
   flex: 1 1 0;
@@ -137,16 +141,18 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 2px solid #222831;
   background: #393e46;
-  font-size: 1.5em;
+  font-size: 1.75vw;
   color: #fff;
-  font-family: 'Oswald', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   position: relative;
   height: 56px;
   transition: background 0.2s, border 0.2s, color 0.2s;
   opacity: 0.5; /* Inactive by default */
   filter: grayscale(0.3) brightness(0.85);
+  /* Container query for responsive font size */
+  container-type: inline-size;
+  padding: 0 1vw;
 }
 .overlay-set.active {
   border: 2.5px solid #00adb5;
@@ -158,9 +164,11 @@ button:focus-visible {
 }
 .overlay-score {
   font-weight: 700;
-  font-size: 1.3em;
+  font-size: 2.2vw;
   letter-spacing: 1px;
-  font-family: 'Oswald', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  /* Container query for responsive font size */
+  container-type: inline-size;
 }
 .overlay-score-sep {
   margin: 0 0.2em;
@@ -168,22 +176,53 @@ button:focus-visible {
 }
 .overlay-tournament {
   text-align: center;
-  font-size: 1.05em;
+  font-size: 1.2vw;
   color: #fff;
   background: #00adb5;
   padding: 3px 0 2px 0;
   border-top: 2px solid #222831;
   border-radius: 0 0 6px 6px;
   letter-spacing: 0.04em;
-  font-family: 'Oswald', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   font-weight: 600;
   text-shadow: 0 1px 2px #22283144;
+  /* Container query for responsive font size */
+  container-type: inline-size;
 }
-@media (max-width: 900px) {
-  .overlay-board { min-width: 320px; width: 98vw; }
-  .overlay-set { min-width: 36px; font-size: 1.1em; }
-  .overlay-team-name { font-size: 0.95em; }
+@container (max-width: 400px) {
+  .overlay-score {
+    font-size: 4vw;
+  }
+  .overlay-set {
+    font-size: 4.5vw;
+  }
+  .overlay-tournament {
+    font-size: 2.5vw;
+  }
 }
+@container (min-width: 401px) and (max-width: 700px) {
+  .overlay-score {
+    font-size: 3vw;
+  }
+  .overlay-set {
+    font-size: 3.5vw;
+  }
+  .overlay-tournament {
+    font-size: 1.8vw;
+  }
+}
+@container (min-width: 701px) {
+  .overlay-score {
+    font-size: 2.2vw;
+  }
+  .overlay-set {
+    font-size: 2.5vw;
+  }
+  .overlay-tournament {
+    font-size: 1.2vw;
+  }
+}
+
 
 /* Admin view styles */
 .admin-view {
