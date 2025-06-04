@@ -164,7 +164,7 @@ button:focus-visible {
 }
 .overlay-score {
   font-weight: 700;
-  font-size: 2.2vw;
+  font-size: max(2.2vw, 1.08em);
   letter-spacing: 1px;
   font-family: 'Segoe UI', Arial, sans-serif;
   /* Container query for responsive font size */
@@ -191,7 +191,7 @@ button:focus-visible {
 }
 @container (max-width: 400px) {
   .overlay-score {
-    font-size: 4vw;
+    font-size: max(4vw, 1.08em);
   }
   .overlay-set {
     font-size: 4.5vw;
@@ -202,7 +202,7 @@ button:focus-visible {
 }
 @container (min-width: 401px) and (max-width: 700px) {
   .overlay-score {
-    font-size: 3vw;
+    font-size: max(3vw, 1.08em);
   }
   .overlay-set {
     font-size: 3.5vw;
@@ -213,7 +213,7 @@ button:focus-visible {
 }
 @container (min-width: 701px) {
   .overlay-score {
-    font-size: 2.2vw;
+    font-size: max(2.2vw, 1.08em);
   }
   .overlay-set {
     font-size: 2.5vw;
