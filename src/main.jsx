@@ -639,22 +639,22 @@ function OverlayView() {
                         lineHeight: 1.1,
                       }}
                     >
-                      <span className="score-anim-wrap" style={{ display: 'inline-block', overflow: 'hidden', width: '6vw', height: '1.2em', verticalAlign: 'middle', textAlign: 'center', position: 'relative', minWidth: 0 }}>
+                      <span className="score-anim-wrap" style={{ display: 'inline-block', overflow: 'hidden', width: '2.2em', height: '1.2em', verticalAlign: 'middle', textAlign: 'center', position: 'relative', minWidth: 0 }}>
                         {scoreAnim[setIdx*2] ? (
                           <>
-                            <span className="score-slide-out" style={{ display: 'block', width: '100%', ...((team1Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2].prev}</span>
-                            <span className="score-slide-in" style={{ display: 'block', width: '100%', ...((team1Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2].next}</span>
+                            <span className={`score-slide-out${scoreAnim[setIdx*2].dir === -1 ? ' reverse' : ''}`} style={{ display: 'block', width: '100%', ...((team1Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2].prev}</span>
+                            <span className={`score-slide-in${scoreAnim[setIdx*2].dir === -1 ? ' reverse' : ''}`} style={{ display: 'block', width: '100%', ...((team1Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2].next}</span>
                           </>
                         ) : (
                           <span style={team1Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team1Score}</span>
                         )}
                       </span>
                       <span className="overlay-score-sep" style={{ fontWeight: 700, fontSize: '1em', verticalAlign: 'middle', userSelect: 'none', minWidth: 0 }}>-</span>
-                      <span className="score-anim-wrap" style={{ display: 'inline-block', overflow: 'hidden', width: '6vw', height: '1.2em', verticalAlign: 'middle', textAlign: 'center', position: 'relative', minWidth: 0 }}>
+                      <span className="score-anim-wrap" style={{ display: 'inline-block', overflow: 'hidden', width: '2.2em', height: '1.2em', verticalAlign: 'middle', textAlign: 'center', position: 'relative', minWidth: 0 }}>
                         {scoreAnim[setIdx*2+1] ? (
                           <>
-                            <span className="score-slide-out" style={{ display: 'block', width: '100%', ...((team2Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2+1].prev}</span>
-                            <span className="score-slide-in" style={{ display: 'block', width: '100%', ...((team2Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2+1].next}</span>
+                            <span className={`score-slide-out${scoreAnim[setIdx*2+1].dir === -1 ? ' reverse' : ''}`} style={{ display: 'block', width: '100%', ...((team2Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2+1].prev}</span>
+                            <span className={`score-slide-in${scoreAnim[setIdx*2+1].dir === -1 ? ' reverse' : ''}`} style={{ display: 'block', width: '100%', ...((team2Won) ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}) }}>{scoreAnim[setIdx*2+1].next}</span>
                           </>
                         ) : (
                           <span style={team2Won ? { color: '#00ffae', fontWeight: 900, textShadow: '0 0 8px #00ffae88' } : {}}>{team2Score}</span>
@@ -754,12 +754,26 @@ if (typeof window !== 'undefined' && !document.getElementById('score-slide-keyfr
   position: absolute;
   left: 0; right: 0;
 }
+.score-slide-out.reverse {
+  animation: scoreSlideOutReverse 350ms cubic-bezier(0.4,0,0.2,1) forwards;
+}
+.score-slide-in.reverse {
+  animation: scoreSlideInReverse 350ms cubic-bezier(0.4,0,0.2,1) forwards;
+}
 @keyframes scoreSlideOut {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(100%); }
 }
 @keyframes scoreSlideIn {
   0% { opacity: 0; transform: translateY(-100%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes scoreSlideOutReverse {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-100%); }
+}
+@keyframes scoreSlideInReverse {
+  0% { opacity: 0; transform: translateY(100%); }
   100% { opacity: 1; transform: translateY(0); }
 }
 `;
