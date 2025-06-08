@@ -30,9 +30,8 @@
         "main.jsx", "App.jsx", "index.css", "App.css"
       ],
       "dependencies": [
-        "react", "react-dom", "react-router-dom", "socket.io-client" ],
-      "exports": [
-        "AdminView (score/:sqid)",
+        "react", "react-dom", "react-router-dom", "socket.io-client" ],      "exports": [
+        "ScoreView (score/:sqid)",
         "OverlayView (board/:sqid)",
         "App (/)"
       ],
@@ -42,19 +41,17 @@
         "index.css/App.css": "Styling for the frontend."
       }
     }
-  },
-  "routing": {
+  },  "routing": {
     "/": "App.jsx (landing or info)",
-    "/score/:sqid": "AdminView (edit/update scoreboard)",
+    "/score/:sqid": "ScoreView (edit/update scoreboard)",
     "/board/:sqid": "OverlayView (public/stream display)"
   },
   "data_flow": {
     "REST API": "CRUD scoreboard state, used by frontend for updates.",
     "WebSocket": "Real-time push of scoreboard changes to all clients of a board.",
     "Sqids": "Short unique IDs for secure scoreboard access."
-  },
-  "llm_guidance": {
+  },  "llm_guidance": {
     "backend": "Follow scoreboard app specification.md for business logic and data model. Use REST and WebSocket APIs for all scoreboard data operations.",
-    "frontend": "Use hooks in main.jsx for API/socket. AdminView for editing, OverlayView for display. Style overlay for streaming embedding."
+    "frontend": "Use hooks in main.jsx for API/socket. ScoreView for editing, OverlayView for display. Style overlay for streaming embedding."
   }
 }

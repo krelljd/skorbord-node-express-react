@@ -113,8 +113,8 @@ function throttle(fn, wait) {
   };
 }
 
-// --- AdminView ---
-function AdminView() {
+// --- ScoreView ---
+function ScoreView() {
   const { sqid } = useParams();
   const { scoreboard, setScoreboard, loading, error } = useScoreboard(sqid);
   const [edit, setEdit] = useState({
@@ -204,7 +204,7 @@ function AdminView() {
 
   return (
     <div style={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="admin-view" style={{ maxWidth: 420, width: '100%', padding: 0, background: 'none', boxShadow: 'none', ...themeVars }}>
+      <div className="score-view" style={{ maxWidth: 420, width: '100%', padding: 0, background: 'none', boxShadow: 'none', ...themeVars }}>
         {/* Material-style card for main controls */}
         <div style={{ background: 'var(--card)', borderRadius: 18, boxShadow: '0 2px 12px #00adb522', padding: 20, marginTop: 24, marginBottom: 16 }}>
           <div style={{ marginTop: 18, marginBottom: 0 }}>
@@ -785,7 +785,7 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/score/:sqid" element={<AdminView />} />
+        <Route path="/score/:sqid" element={<ScoreView />} />
         <Route path="/board/:sqid" element={<OverlayView />} />
       </Routes>
     </BrowserRouter>

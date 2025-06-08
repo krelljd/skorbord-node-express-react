@@ -21,7 +21,7 @@ This is a volleyball scoreboard application built with Node.js, Express, React, 
 
 ## Frontend (React)
 - Directory: `src/`
-- AdminView: Allows editing of team names, colors, tournament, and scores
+- ScoreView: Allows editing of team names, colors, tournament, and scores
 - OverlayView: Displays scores and team info for streaming overlays
 - Overlay always uses light mode, fills viewport, minimal padding, top-aligned
 - Team color/accent bars extend full height, no spacing or borders
@@ -39,7 +39,7 @@ This is a volleyball scoreboard application built with Node.js, Express, React, 
 ## UI/UX
 - Modern, clean, and accessible design
 - OverlayView: minimal, stream-friendly, always light mode
-- AdminView: compact controls, collapsible match info section
+- ScoreView: compact controls, collapsible match info section
 - Buttons and text use relative font sizes for accessibility
 
 ## Example: OverlayView Set Highlighting Logic

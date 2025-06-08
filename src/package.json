@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite preview --port 5173",
-    "test": "jest --env=jsdom --setupFilesAfterEnv=./src/setupTests.js"
+    "test": "jest --env=jsdom --setupFilesAfterEnv=./setupTests.js"
   },
   "dependencies": {
     "react": "^18.3.0",

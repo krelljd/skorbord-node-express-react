@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export const AdminView = () => {
+export const ScoreView = () => {
   const [showEdit, setShowEdit] = useState(false);
 
   const handleSave = () => {

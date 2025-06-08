@@ -9,11 +9,10 @@ beforeEach(() => {
   global.fetch = jest.fn();
   jest.spyOn(mainModule, 'useSocket').mockImplementation(() => {});
 });
-afterEach(() => {
-  jest.resetAllMocks();
+afterEach(() => {  jest.resetAllMocks();
 });
 
-describe('AdminView', () => {
+describe('ScoreView', () => {
   const scoreboard = {
     TeamName1: 'Alpha',
     TeamName2: 'Beta',
@@ -24,22 +23,19 @@ describe('AdminView', () => {
     TeamAccent2: '#ffb26b',
     Scores: '10,12,8,15,0,0',
     ActiveSet: 1,
-    BoardColor: '#23272b',
-  };
+    BoardColor: '#23272b',  };
 
-  function renderAdminView() {
+  function renderScoreView() {
     global.fetch.mockResolvedValueOnce({ json: () => Promise.resolve(scoreboard) });
-    render(
-      <MemoryRouter initialEntries={[`/score/abc123`]}>
+    render(      <MemoryRouter initialEntries={[`/score/abc123`]}>
         <Routes>
-          <Route path="/score/:sqid" element={<mainModule.AdminView />} />
+          <Route path="/score/:sqid" element={<mainModule.ScoreView />} />
         </Routes>
       </MemoryRouter>
     );
   }
-
   it('Given a loaded scoreboard, When rendered, Then shows team names, scores, and active set', async () => {
-    renderAdminView();
+    renderScoreView();
     expect(await screen.findByText('Alpha')).toBeInTheDocument();
     expect(screen.getByText('Beta')).toBeInTheDocument();
     expect(screen.getByText('Set 2')).toBeInTheDocument();
@@ -47,9 +43,8 @@ describe('AdminView', () => {
     expect(screen.getByText('10')).toBeInTheDocument();
     expect(screen.getByText('12')).toBeInTheDocument();
   });
-
   it('Given the edit section is toggled, When user changes team name and saves, Then saveTeamInfo is called', async () => {
-    renderAdminView();
+    renderScoreView();
     fireEvent.click(await screen.findByText(/Show Match Info/i));
     const input = screen.getByPlaceholderText('Team 1 Name');
     fireEvent.change(input, { target: { value: 'Gamma' } });
@@ -57,9 +52,8 @@ describe('AdminView', () => {
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => expect(global.fetch).toHaveBeenCalled());
   });
-
   it('Given the reset button, When clicked, Then all scores are reset and set 1 is active', async () => {
-    renderAdminView();
+    renderScoreView();
     fireEvent.click(await screen.findByText(/Show Match Info/i));
     fireEvent.click(screen.getByText('Reset Scores'));
     await waitFor(() => expect(global.fetch).toHaveBeenCalled());

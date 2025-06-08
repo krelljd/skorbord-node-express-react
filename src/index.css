@@ -224,28 +224,25 @@ button:focus-visible {
 }
 
 
-/* Admin view styles */
-.admin-view {
+/* Score view styles */
+.score-view {
   padding: 16px 8px 32px 8px;
   max-width: 600px;
   margin: 0 auto;
   background: #23272f;
   color: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 16px 0 #0002;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  box-shadow: 0 2px 16px 0 #0002;  font-family: 'Segoe UI', Arial, sans-serif;
 }
-.admin-view h2 {
+.score-view h2 {
   font-size: 1.3em;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #00adb5;
-  letter-spacing: 0.01em;
+  color: #00adb5;  letter-spacing: 0.01em;
 }
-.admin-view strong {
-  color: #00adb5;
+.score-view strong {  color: #00adb5;
 }
-.admin-view button {
+.score-view button {
   background: #00adb5;
   color: #fff;
   border: none;
@@ -254,13 +251,11 @@ button:focus-visible {
   font-size: 1em;
   font-weight: 600;
   margin: 0 2px;
-  cursor: pointer;
-  transition: background 0.2s;
+  cursor: pointer;  transition: background 0.2s;
 }
-.admin-view button:active {
-  background: #007c85;
+.score-view button:active {  background: #007c85;
 }
-.admin-view input, .admin-view select {
+.score-view input, .score-view select {
   font-size: 1em;
   padding: 4px 8px;
   border-radius: 4px;
@@ -268,12 +263,11 @@ button:focus-visible {
   margin: 0 4px;
 }
 @media (max-width: 700px) {
-  .admin-view {
+  .score-view {
     padding: 8px 2px 24px 2px;
-    max-width: 98vw;
-    font-size: 0.98em;
+    max-width: 98vw;    font-size: 0.98em;
   }
-  .admin-view h2 {
+  .score-view h2 {
     font-size: 1.1em;
   }
 }
