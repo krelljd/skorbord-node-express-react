@@ -9,8 +9,10 @@ servers:
   - url: /api/cards
 paths:
   /games:
+  /games/{gameId}:
+  /{sqid}/games:
     get:
-      summary: List all games
+      summary: List all games for a user/session
       parameters:
         - $ref: '#/components/parameters/sqid'
       responses:
@@ -19,7 +21,9 @@ paths:
         '500':
           description: Server/database error
     post:
-      summary: Create a new game
+      summary: Create a new game for a user/session
+      parameters:
+        - $ref: '#/components/parameters/sqid'
       requestBody:
         required: true
         content:
@@ -33,12 +37,12 @@ paths:
           description: Invalid input
         '500':
           description: Server/database error
-  /games/{gameId}:
+  /{sqid}/games/{gameId}:
     get:
-      summary: Get game details
+      summary: Get game details (must match sqid)
       parameters:
-        - $ref: '#/components/parameters/gameId'
         - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/gameId'
       responses:
         '200':
           description: Game details
@@ -47,10 +51,10 @@ paths:
         '500':
           description: Server/database error
     put:
-      summary: Update game
+      summary: Update game (must match sqid)
       parameters:
-        - $ref: '#/components/parameters/gameId'
         - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/gameId'
       requestBody:
         required: true
         content:
@@ -67,10 +71,10 @@ paths:
         '500':
           description: Server/database error
     delete:
-      summary: Delete a game
+      summary: Delete game (must match sqid)
       parameters:
-        - $ref: '#/components/parameters/gameId'
         - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/gameId'
       responses:
         '204':
           description: Game deleted
@@ -78,12 +82,12 @@ paths:
           description: Game not found
         '500':
           description: Server/database error
-  /games/{gameId}/players:
+  /{sqid}/games/{gameId}/players:
     get:
       summary: List players in a game
       parameters:
-        - $ref: '#/components/parameters/gameId'
         - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/gameId'
       responses:
         '200':
           description: List of players
@@ -94,8 +98,8 @@ paths:
     post:
       summary: Add a player to a game
       parameters:
-        - $ref: '#/components/parameters/gameId'
         - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/gameId'
       requestBody:
         required: true
         content:
@@ -111,10 +115,11 @@ paths:
           description: Game not found
         '500':
           description: Server/database error
-  /players/{playerId}:
+  /{sqid}/players/{playerId}:
     put:
       summary: Update player
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/playerId'
       requestBody:
         required: true
@@ -134,6 +139,7 @@ paths:
     delete:
       summary: Remove a player
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/playerId'
       responses:
         '204':
@@ -142,10 +148,11 @@ paths:
           description: Player not found
         '500':
           description: Server/database error
-  /games/{gameId}/rounds:
+  /{sqid}/games/{gameId}/rounds:
     get:
       summary: List rounds for a game
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/gameId'
       responses:
         '200':
@@ -157,6 +164,7 @@ paths:
     post:
       summary: Add a new round
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/gameId'
       requestBody:
         required: true
@@ -173,10 +181,11 @@ paths:
           description: Game not found
         '500':
           description: Server/database error
-  /rounds/{roundId}/scores:
+  /{sqid}/rounds/{roundId}/scores:
     get:
       summary: Get scores for a round
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/roundId'
       responses:
         '200':
@@ -188,6 +197,7 @@ paths:
     post:
       summary: Add or update scores for a round
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/roundId'
       requestBody:
         required: true
@@ -204,10 +214,11 @@ paths:
           description: Round or player not found
         '500':
           description: Server/database error
-  /scores/{scoreId}:
+  /{sqid}/scores/{scoreId}:
     put:
       summary: Edit a score
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/scoreId'
       requestBody:
         required: true
@@ -227,6 +238,7 @@ paths:
     delete:
       summary: Undo/delete a score
       parameters:
+        - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/scoreId'
       responses:
         '204':
@@ -235,16 +247,40 @@ paths:
           description: Score not found
         '500':
           description: Server/database error
-  /rivalries:
+  /{sqid}/rivalries:
+    get:
+      summary: List rivalries for a user/session
+      parameters:
+        - $ref: '#/components/parameters/sqid'
+        - in: query
+          name: game_type
+          schema:
+            type: string
+        - in: query
+          name: group_id
+          schema:
+            type: integer
+            nullable: true
+      responses:
+        '200':
+          description: List of rivalries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rivalry'
     post:
-      summary: Create a new rivalry
+      summary: Create a new rivalry for a user/session
+      parameters:
+        - $ref: '#/components/parameters/sqid'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [game_type, name, sqid]
+              required: [game_type, name]
               properties:
                 game_type:
                   type: string
@@ -255,8 +291,6 @@ paths:
                   type: string
                 notes:
                   type: string
-                sqid:
-                  type: string
       responses:
         '201':
           description: Rivalry created
@@ -264,44 +298,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Rivalry'
-    get:
-      summary: List rivalries
-      parameters:
-        - in: query
-          name: game_type
-          schema:
-            type: string
-        - in: query
-          name: group_id
-          schema:
-            type: integer
-            nullable: true
-        - $ref: '#/components/parameters/sqid'
-      responses:
-        '200':
-          description: List of rivalries
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Rivalry'
-  /rivalries/{rivalryId}/stats:
-    get:
-      summary: Get rivalry stats
-      parameters:
-        - in: path
-          name: rivalryId
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Rivalry stats
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RivaltyStats'
 components:
   parameters:
     gameId:

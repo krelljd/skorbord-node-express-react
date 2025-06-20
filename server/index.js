@@ -274,6 +274,222 @@ io.on('connection', (socket) => {
   });
 });
 
+// --- Card Game Scoring API (Sqid-based discrimination) ---
+// All endpoints below require a valid 'sqid' as a URL segment for user/session separation.
+
+// --- GAMES ---
+app.get('/api/cards/:sqid/games', (req, res) => {
+  const { sqid } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.all('SELECT * FROM games WHERE sqid = ?', [sqid], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.post('/api/cards/:sqid/games', (req, res) => {
+  const { sqid } = req.params;
+  const { name, game_type, target_score, notes } = req.body;
+  if (!isValidSqid(sqid) || typeof name !== 'string') return res.status(400).json({ error: 'Missing or invalid sqid or name' });
+  db.run(
+    'INSERT INTO games (name, game_type, target_score, notes, sqid) VALUES (?, ?, ?, ?, ?)',
+    [name, game_type, target_score, notes, sqid],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID });
+    }
+  );
+});
+
+app.get('/api/cards/:sqid/games/:gameId', (req, res) => {
+  const { sqid, gameId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.get('SELECT * FROM games WHERE id = ? AND sqid = ?', [gameId, sqid], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Game not found' });
+    res.json(row);
+  });
+});
+
+app.put('/api/cards/:sqid/games/:gameId', (req, res) => {
+  const { sqid, gameId } = req.params;
+  const { name, game_type, target_score, notes, is_active } = req.body;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.run(
+    'UPDATE games SET name=?, game_type=?, target_score=?, notes=?, is_active=? WHERE id=? AND sqid=?',
+    [name, game_type, target_score, notes, is_active, gameId, sqid],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: 'Game not found' });
+      res.json({ success: true });
+    }
+  );
+});
+
+app.delete('/api/cards/:sqid/games/:gameId', (req, res) => {
+  const { sqid, gameId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.run('DELETE FROM games WHERE id = ? AND sqid = ?', [gameId, sqid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Game not found' });
+    res.status(204).end();
+  });
+});
+
+// --- PLAYERS ---
+app.get('/api/cards/:sqid/games/:gameId/players', (req, res) => {
+  const { sqid, gameId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.all('SELECT * FROM players WHERE game_id = ? AND game_id IN (SELECT id FROM games WHERE id = ? AND sqid = ?)', [gameId, gameId, sqid], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+app.post('/api/cards/:sqid/games/:gameId/players', (req, res) => {
+  const { sqid, gameId } = req.params;
+  const { name, avatar, color, position } = req.body;
+  if (!isValidSqid(sqid) || typeof name !== 'string') return res.status(400).json({ error: 'Missing or invalid sqid or name' });
+  db.run(
+    'INSERT INTO players (game_id, name, avatar, color, position) VALUES (?, ?, ?, ?, ?)',
+    [gameId, name, avatar, color, position],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID });
+    }
+  );
+});
+app.put('/api/cards/:sqid/players/:playerId', (req, res) => {
+  const { sqid, playerId } = req.params;
+  const { name, avatar, color, position } = req.body;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.run(
+    'UPDATE players SET name=?, avatar=?, color=?, position=? WHERE id=? AND game_id IN (SELECT id FROM games WHERE sqid = ?)',
+    [name, avatar, color, position, playerId, sqid],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: 'Player not found' });
+      res.json({ success: true });
+    }
+  );
+});
+app.delete('/api/cards/:sqid/players/:playerId', (req, res) => {
+  const { sqid, playerId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.run('DELETE FROM players WHERE id = ? AND game_id IN (SELECT id FROM games WHERE sqid = ?)', [playerId, sqid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Player not found' });
+    res.status(204).end();
+  });
+});
+
+// --- ROUNDS ---
+app.get('/api/cards/:sqid/games/:gameId/rounds', (req, res) => {
+  const { sqid, gameId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.all('SELECT * FROM rounds WHERE game_id = ? AND game_id IN (SELECT id FROM games WHERE id = ? AND sqid = ?)', [gameId, gameId, sqid], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+app.post('/api/cards/:sqid/games/:gameId/rounds', (req, res) => {
+  const { sqid, gameId } = req.params;
+  const { round_number } = req.body;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.run(
+    'INSERT INTO rounds (game_id, round_number) VALUES (?, ?)',
+    [gameId, round_number],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID });
+    }
+  );
+});
+
+// --- SCORES ---
+app.get('/api/cards/:sqid/rounds/:roundId/scores', (req, res) => {
+  const { sqid, roundId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.all('SELECT * FROM scores WHERE round_id = ? AND round_id IN (SELECT id FROM rounds WHERE id = ? AND game_id IN (SELECT id FROM games WHERE sqid = ?))', [roundId, roundId, sqid], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+app.post('/api/cards/:sqid/rounds/:roundId/scores', (req, res) => {
+  const { sqid, roundId } = req.params;
+  const { scores } = req.body;
+  if (!isValidSqid(sqid) || !Array.isArray(scores)) return res.status(400).json({ error: 'Missing or invalid sqid or scores' });
+  // Upsert scores for each player
+  let completed = 0, errored = false;
+  scores.forEach(({ player_id, score }) => {
+    db.run(
+      'INSERT INTO scores (round_id, player_id, score) VALUES (?, ?, ?) ON CONFLICT(round_id, player_id) DO UPDATE SET score=excluded.score',
+      [roundId, player_id, score],
+      function (err) {
+        if (errored) return;
+        if (err) {
+          errored = true;
+          return res.status(500).json({ error: err.message });
+        }
+        completed++;
+        if (completed === scores.length) res.status(201).json({ success: true });
+      }
+    );
+  });
+});
+
+app.put('/api/cards/:sqid/scores/:scoreId', (req, res) => {
+  const { sqid, scoreId } = req.params;
+  const { score } = req.body;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.run(
+    'UPDATE scores SET score=? WHERE id=? AND round_id IN (SELECT id FROM rounds WHERE game_id IN (SELECT id FROM games WHERE sqid = ?))',
+    [score, scoreId, sqid],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: 'Score not found' });
+      res.json({ success: true });
+    }
+  );
+});
+app.delete('/api/cards/:sqid/scores/:scoreId', (req, res) => {
+  const { sqid, scoreId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  db.run('DELETE FROM scores WHERE id = ? AND round_id IN (SELECT id FROM rounds WHERE game_id IN (SELECT id FROM games WHERE sqid = ?))', [scoreId, sqid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Score not found' });
+    res.status(204).end();
+  });
+});
+
+// --- RIVALRIES ---
+app.get('/api/cards/:sqid/rivalries', (req, res) => {
+  const { sqid } = req.params;
+  const { game_type, group_id } = req.query;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  let sql = 'SELECT * FROM rivalries WHERE sqid = ?';
+  const params = [sqid];
+  if (game_type) { sql += ' AND game_type = ?'; params.push(game_type); }
+  if (group_id) { sql += ' AND group_id = ?'; params.push(group_id); }
+  db.all(sql, params, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.post('/api/cards/:sqid/rivalries', (req, res) => {
+  const { sqid } = req.params;
+  const { game_type, group_id, name, notes } = req.body;
+  if (!isValidSqid(sqid) || typeof name !== 'string' || typeof game_type !== 'string') return res.status(400).json({ error: 'Missing or invalid sqid, name, or game_type' });
+  db.run(
+    'INSERT INTO rivalries (game_type, group_id, name, notes, sqid) VALUES (?, ?, ?, ?, ?)',
+    [game_type, group_id, name, notes, sqid],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID });
+    }
+  );
+});
+
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
