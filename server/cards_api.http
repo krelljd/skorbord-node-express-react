@@ -1,13 +1,14 @@
-@devHost = http://localhost:3000/api/cards
+@devHost = http://localhost:4000/api/cards
 @prodHost = https://skorbord.app/api/cards
 @host = {{devHost}}
+@sqid = MXsAKe
 
 ### List all games
-GET {{host}}/abc123/games
+GET {{host}}/{{sqid}}/games
 Accept: application/json
 
 ### Create a new game
-POST {{host}}/abc123/games
+POST {{host}}/{{sqid}}/games
 Content-Type: application/json
 {
   "name": "Test Game",
@@ -17,11 +18,11 @@ Content-Type: application/json
 }
 
 ### Get game details
-GET {{host}}/abc123/games/1
+GET {{host}}/{{sqid}}/games/1
 Accept: application/json
 
 ### Update game
-PUT {{host}}/abc123/games/1
+PUT {{host}}/{{sqid}}/games/1
 Content-Type: application/json
 {
   "name": "Updated Game Name",
@@ -29,24 +30,23 @@ Content-Type: application/json
 }
 
 ### Delete a game
-DELETE {{host}}/abc123/games/1
+DELETE {{host}}/{{sqid}}/games/1
 
 ### List players in a game
-GET {{host}}/abc123/games/1/players
+GET {{host}}/{{sqid}}/games/1/players
 Accept: application/json
 
 ### Add a player to a game
-POST {{host}}/abc123/games/1/players
+POST {{host}}/{{sqid}}/games/1/players
 Content-Type: application/json
 {
   "name": "Alice",
-  "avatar": "avatar1.png",
   "color": "#FF0000",
   "position": 1
 }
 
 ### Update player
-PUT {{host}}/abc123/players/1
+PUT {{host}}/{{sqid}}/players/1
 Content-Type: application/json
 {
   "name": "Alice Updated",
@@ -54,25 +54,25 @@ Content-Type: application/json
 }
 
 ### Remove a player
-DELETE {{host}}/abc123/players/1
+DELETE {{host}}/{{sqid}}/players/1
 
 ### List rounds for a game
-GET {{host}}/abc123/games/1/rounds
+GET {{host}}/{{sqid}}/games/1/rounds
 Accept: application/json
 
 ### Add a new round
-POST {{host}}/abc123/games/1/rounds
+POST {{host}}/{{sqid}}/games/1/rounds
 Content-Type: application/json
 {
   "round_number": 1
 }
 
 ### Get scores for a round
-GET {{host}}/abc123/rounds/1/scores
+GET {{host}}/{{sqid}}/rounds/1/scores
 Accept: application/json
 
 ### Add or update scores for a round
-POST {{host}}/abc123/rounds/1/scores
+POST {{host}}/{{sqid}}/rounds/1/scores
 Content-Type: application/json
 {
   "scores": [
@@ -82,21 +82,21 @@ Content-Type: application/json
 }
 
 ### Edit a score
-PUT {{host}}/abc123/scores/1
+PUT {{host}}/{{sqid}}/scores/1
 Content-Type: application/json
 {
   "score": 15
 }
 
 ### Undo/delete a score
-DELETE {{host}}/abc123/scores/1
+DELETE {{host}}/{{sqid}}/scores/1
 
 ### List rivalry groups
-GET {{host}}/abc123/rivalries
+GET {{host}}/{{sqid}}/rivalries
 Accept: application/json
 
 ### Create a rivalry group (multi-player/team)
-POST {{host}}/abc123/rivalries
+POST {{host}}/{{sqid}}/rivalries
 Content-Type: application/json
 {
   "name": "Team A vs Team B",
@@ -111,11 +111,11 @@ Content-Type: application/json
 }
 
 ### Get rivalry group details
-GET {{host}}/abc123/rivalries/1
+GET {{host}}/{{sqid}}/rivalries/1
 Accept: application/json
 
 ### Update rivalry group
-PUT {{host}}/abc123/rivalries/1
+PUT {{host}}/{{sqid}}/rivalries/1
 Content-Type: application/json
 {
   "name": "Updated Rivalry Name",
@@ -123,14 +123,14 @@ Content-Type: application/json
 }
 
 ### Remove a rivalry group
-DELETE {{host}}/abc123/rivalries/1
+DELETE {{host}}/{{sqid}}/rivalries/1
 
 ### List players in a rivalry group
-GET {{host}}/abc123/rivalries/1/players
+GET {{host}}/{{sqid}}/rivalries/1/players
 Accept: application/json
 
 ### Add players to a rivalry group
-POST {{host}}/abc123/rivalries/1/players
+POST {{host}}/{{sqid}}/rivalries/1/players
 Content-Type: application/json
 {
   "players": [
@@ -140,13 +140,13 @@ Content-Type: application/json
 }
 
 ### Get rivalry group stats
-GET {{host}}/abc123/rivalries/1/stats
+GET {{host}}/{{sqid}}/rivalries/1/stats
 Accept: application/json
 
 ### Get game history
-GET {{host}}/abc123/games/1/history
+GET {{host}}/{{sqid}}/games/1/history
 Accept: application/json
 
 ### Export game results
-GET {{host}}/abc123/games/1/export
+GET {{host}}/{{sqid}}/games/1/export
 Accept: application/json

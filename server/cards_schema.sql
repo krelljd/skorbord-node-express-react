@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS players (
     id INTEGER PRIMARY KEY,
     game_id INTEGER NOT NULL,
     name TEXT,
-    avatar TEXT,
     color TEXT,
     position INTEGER,
     FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE

@@ -373,8 +373,6 @@ components:
       properties:
         name:
           type: string
-        avatar:
-          type: string
         color:
           type: string
         position:
@@ -383,8 +381,6 @@ components:
       type: object
       properties:
         name:
-          type: string
-        avatar:
           type: string
         color:
           type: string

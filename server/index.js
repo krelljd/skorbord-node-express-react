@@ -347,11 +347,11 @@ app.get('/api/cards/:sqid/games/:gameId/players', (req, res) => {
 });
 app.post('/api/cards/:sqid/games/:gameId/players', (req, res) => {
   const { sqid, gameId } = req.params;
-  const { name, avatar, color, position } = req.body;
+  const { name, color, position } = req.body;
   if (!isValidSqid(sqid) || typeof name !== 'string') return res.status(400).json({ error: 'Missing or invalid sqid or name' });
   db.run(
-    'INSERT INTO players (game_id, name, avatar, color, position) VALUES (?, ?, ?, ?, ?)',
-    [gameId, name, avatar, color, position],
+    'INSERT INTO players (game_id, name, color, position) VALUES (?, ?, ?, ?)',
+    [gameId, name, color, position],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
       res.status(201).json({ id: this.lastID });
@@ -360,11 +360,11 @@ app.post('/api/cards/:sqid/games/:gameId/players', (req, res) => {
 });
 app.put('/api/cards/:sqid/players/:playerId', (req, res) => {
   const { sqid, playerId } = req.params;
-  const { name, avatar, color, position } = req.body;
+  const { name, color, position } = req.body;
   if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
   db.run(
-    'UPDATE players SET name=?, avatar=?, color=?, position=? WHERE id=? AND game_id IN (SELECT id FROM games WHERE sqid = ?)',
-    [name, avatar, color, position, playerId, sqid],
+    'UPDATE players SET name=?, color=?, position=? WHERE id=? AND game_id IN (SELECT id FROM games WHERE sqid = ?)',
+    [name, color, position, playerId, sqid],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
       if (this.changes === 0) return res.status(404).json({ error: 'Player not found' });
