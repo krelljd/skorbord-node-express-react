@@ -315,6 +315,16 @@ app.put('/api/cards/:sqid/games/:gameId', (req, res) => {
   const { sqid, gameId } = req.params;
   const { name, game_type, target_score, notes, is_active } = req.body;
   if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  // Require all fields to be present
+  if (
+    typeof name !== 'string' ||
+    typeof game_type !== 'string' ||
+    typeof target_score !== 'number' ||
+    typeof notes !== 'string' ||
+    typeof is_active !== 'number'
+  ) {
+    return res.status(400).json({ error: 'Missing or invalid required fields for game update' });
+  }
   db.run(
     'UPDATE games SET name=?, game_type=?, target_score=?, notes=?, is_active=? WHERE id=? AND sqid=?',
     [name, game_type, target_score, notes, is_active, gameId, sqid],
@@ -386,6 +396,14 @@ app.put('/api/cards/:sqid/players/:playerId', (req, res) => {
   const { sqid, playerId } = req.params;
   const { name, color, position } = req.body;
   if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  // Require all fields to be present
+  if (
+    typeof name !== 'string' ||
+    typeof color !== 'string' ||
+    typeof position !== 'string'
+  ) {
+    return res.status(400).json({ error: 'Missing or invalid required fields for player update' });
+  }
   db.run(
     'UPDATE players SET name=?, color=?, position=? WHERE id=? AND game_id IN (SELECT id FROM games WHERE sqid = ?)',
     [name, color, position, playerId, sqid],
@@ -489,6 +507,10 @@ app.put('/api/cards/:sqid/scores/:scoreId', (req, res) => {
   const { sqid, scoreId } = req.params;
   const { score } = req.body;
   if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  // Require score to be present and a number
+  if (typeof score !== 'number') {
+    return res.status(400).json({ error: 'Missing or invalid required field: score' });
+  }
   db.run(
     'UPDATE scores SET score=? WHERE id=? AND round_id IN (SELECT id FROM rounds WHERE game_id IN (SELECT id FROM games WHERE sqid = ?))',
     [score, scoreId, sqid],

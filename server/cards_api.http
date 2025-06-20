@@ -1,6 +1,10 @@
-@devHost = http://localhost:4000/api/cards
-@prodHost = https://skorbord.app/api/cards
-@host = {{devHost}}
+### using REST Client for VS Code 
+# "rest-client.environmentVariables": {
+#     "$shared": {"version": "v1"}, 
+#     "prod": {"appHost": "https://skorbord.app", "apiHost": "https://skorbord.app/api"}, 
+#     "dev":{"appHost":"http://localhost:3000", "apiHost": "http://localhost:4000/api"}
+# }
+@host = {{apiHost}}/cards
 @sqid = MXsAKe
 
 ### List all games
@@ -28,7 +32,10 @@ Content-Type: application/json
 
 {
   "name": "Updated Game Name",
-  "is_active": true
+  "game_type": "Golf",
+  "target_score": 120,
+  "notes": "Updated notes",
+  "is_active": 1
 }
 
 ### Partially update game
@@ -62,7 +69,8 @@ Content-Type: application/json
 
 {
   "name": "Alice Updated",
-  "color": "#00FF00"
+  "color": "#00FF00",
+  "position": "2"
 }
 
 ### Partially update player

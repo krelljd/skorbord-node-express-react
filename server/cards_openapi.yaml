@@ -414,6 +414,7 @@ components:
           type: string
     GameUpdate:
       type: object
+      required: [name, game_type, target_score, notes, is_active]
       properties:
         name:
           type: string
@@ -424,7 +425,7 @@ components:
         notes:
           type: string
         is_active:
-          type: boolean
+          type: integer
         sqid:
           type: string
     PlayerCreate:
@@ -439,13 +440,14 @@ components:
           type: integer
     PlayerUpdate:
       type: object
+      required: [name, color, position]
       properties:
         name:
           type: string
         color:
           type: string
         position:
-          type: integer
+          type: string
     RoundCreate:
       type: object
       properties:
@@ -467,6 +469,7 @@ components:
                 type: integer
     ScoreUpdate:
       type: object
+      required: [score]
       properties:
         score:
           type: integer
