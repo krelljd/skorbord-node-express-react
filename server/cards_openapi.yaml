@@ -1,0 +1,525 @@
+openapi: 3.1.0
+info:
+  title: Card Game Scoring API
+  version: 1.0.1
+  description: |
+    REST API for managing card game scoreboards, players, rounds, scores, and rivalries.
+    All endpoints are under the `/api/cards/` base path.
+servers:
+  - url: /api/cards
+paths:
+  /games:
+    get:
+      summary: List all games
+      responses:
+        '200':
+          description: List of games
+        '500':
+          description: Server/database error
+    post:
+      summary: Create a new game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameCreate'
+      responses:
+        '201':
+          description: Game created
+        '400':
+          description: Invalid input
+        '500':
+          description: Server/database error
+  /games/{gameId}:
+    get:
+      summary: Get game details
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '200':
+          description: Game details
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+    put:
+      summary: Update game
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameUpdate'
+      responses:
+        '200':
+          description: Game updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+    delete:
+      summary: Delete a game
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '204':
+          description: Game deleted
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+  /games/{gameId}/players:
+    get:
+      summary: List players in a game
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '200':
+          description: List of players
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+    post:
+      summary: Add a player to a game
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerCreate'
+      responses:
+        '201':
+          description: Player added
+        '400':
+          description: Invalid input or player limit exceeded
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+  /players/{playerId}:
+    put:
+      summary: Update player
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerUpdate'
+      responses:
+        '200':
+          description: Player updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Player not found
+        '500':
+          description: Server/database error
+    delete:
+      summary: Remove a player
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '204':
+          description: Player removed
+        '404':
+          description: Player not found
+        '500':
+          description: Server/database error
+  /games/{gameId}/rounds:
+    get:
+      summary: List rounds for a game
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '200':
+          description: List of rounds
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+    post:
+      summary: Add a new round
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoundCreate'
+      responses:
+        '201':
+          description: Round added
+        '400':
+          description: Invalid input
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+  /rounds/{roundId}/scores:
+    get:
+      summary: Get scores for a round
+      parameters:
+        - $ref: '#/components/parameters/roundId'
+      responses:
+        '200':
+          description: List of scores
+        '404':
+          description: Round not found
+        '500':
+          description: Server/database error
+    post:
+      summary: Add or update scores for a round
+      parameters:
+        - $ref: '#/components/parameters/roundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreCreateOrUpdate'
+      responses:
+        '201':
+          description: Scores added/updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Round or player not found
+        '500':
+          description: Server/database error
+  /scores/{scoreId}:
+    put:
+      summary: Edit a score
+      parameters:
+        - $ref: '#/components/parameters/scoreId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreUpdate'
+      responses:
+        '200':
+          description: Score updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Score not found
+        '500':
+          description: Server/database error
+    delete:
+      summary: Undo/delete a score
+      parameters:
+        - $ref: '#/components/parameters/scoreId'
+      responses:
+        '204':
+          description: Score deleted
+        '404':
+          description: Score not found
+        '500':
+          description: Server/database error
+  /games/{gameId}/rivalries:
+    get:
+      summary: List rivalry groups in a game
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '200':
+          description: List of rivalry groups
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+    post:
+      summary: Define a rivalry group
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RivalryGroupCreate'
+      responses:
+        '201':
+          description: Rivalry group created
+        '400':
+          description: Invalid input or rivalry already exists
+        '404':
+          description: Game or player not found
+        '500':
+          description: Server/database error
+  /rivalries/{rivalryId}:
+    get:
+      summary: Get rivalry group details
+      parameters:
+        - $ref: '#/components/parameters/rivalryId'
+      responses:
+        '200':
+          description: Rivalry group details
+        '404':
+          description: Rivalry group not found
+        '500':
+          description: Server/database error
+    put:
+      summary: Update rivalry group
+      parameters:
+        - $ref: '#/components/parameters/rivalryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RivalryGroupUpdate'
+      responses:
+        '200':
+          description: Rivalry group updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Rivalry group not found
+        '500':
+          description: Server/database error
+    delete:
+      summary: Remove a rivalry group
+      parameters:
+        - $ref: '#/components/parameters/rivalryId'
+      responses:
+        '204':
+          description: Rivalry group deleted
+        '404':
+          description: Rivalry group not found
+        '500':
+          description: Server/database error
+  /rivalries/{rivalryId}/players:
+    get:
+      summary: List players in a rivalry group
+      parameters:
+        - $ref: '#/components/parameters/rivalryId'
+      responses:
+        '200':
+          description: List of players and their team assignments
+        '404':
+          description: Rivalry group not found
+        '500':
+          description: Server/database error
+    post:
+      summary: Add players to a rivalry group
+      parameters:
+        - $ref: '#/components/parameters/rivalryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RivalryPlayersAdd'
+      responses:
+        '201':
+          description: Players added to rivalry group
+        '400':
+          description: Invalid input or player already in group
+        '404':
+          description: Rivalry group or player not found
+        '500':
+          description: Server/database error
+  /rivalries/{rivalryId}/stats:
+    get:
+      summary: Get rivalry group stats
+      parameters:
+        - $ref: '#/components/parameters/rivalryId'
+      responses:
+        '200':
+          description: Rivalry group stats
+        '404':
+          description: Rivalry group not found
+        '500':
+          description: Server/database error
+  /games/{gameId}/history:
+    get:
+      summary: Get game history (rounds, scores, players)
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '200':
+          description: Game history
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+  /games/{gameId}/export:
+    get:
+      summary: Export game results (CSV, JSON, etc.)
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '200':
+          description: Exported data
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+components:
+  parameters:
+    gameId:
+      name: gameId
+      in: path
+      required: true
+      schema:
+        type: integer
+    playerId:
+      name: playerId
+      in: path
+      required: true
+      schema:
+        type: integer
+    roundId:
+      name: roundId
+      in: path
+      required: true
+      schema:
+        type: integer
+    scoreId:
+      name: scoreId
+      in: path
+      required: true
+      schema:
+        type: integer
+    rivalryId:
+      name: rivalryId
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    GameCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        game_type:
+          type: string
+        target_score:
+          type: integer
+        notes:
+          type: string
+    GameUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        game_type:
+          type: string
+        target_score:
+          type: integer
+        notes:
+          type: string
+        is_active:
+          type: boolean
+    PlayerCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        avatar:
+          type: string
+        color:
+          type: string
+        position:
+          type: integer
+    PlayerUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        avatar:
+          type: string
+        color:
+          type: string
+        position:
+          type: integer
+    RoundCreate:
+      type: object
+      properties:
+        round_number:
+          type: integer
+    ScoreCreateOrUpdate:
+      type: object
+      required: [scores]
+      properties:
+        scores:
+          type: array
+          items:
+            type: object
+            required: [player_id, score]
+            properties:
+              player_id:
+                type: integer
+              score:
+                type: integer
+    ScoreUpdate:
+      type: object
+      properties:
+        score:
+          type: integer
+    RivalryGroupCreate:
+      type: object
+      required: [name, players]
+      properties:
+        name:
+          type: string
+        notes:
+          type: string
+        players:
+          type: array
+          items:
+            type: object
+            required: [player_id, team_number]
+            properties:
+              player_id:
+                type: integer
+              team_number:
+                type: integer
+    RivalryGroupUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        notes:
+          type: string
+    RivalryPlayersAdd:
+      type: object
+      required: [players]
+      properties:
+        players:
+          type: array
+          items:
+            type: object
+            required: [player_id, team_number]
+            properties:
+              player_id:
+                type: integer
+              team_number:
+                type: integer
+    RivaltyStats:
+      type: object
+      properties:
+        wins_team1:
+          type: integer
+        wins_team2:
+          type: integer
+        total_games:
+          type: integer
+        avg_margin:
+          type: number

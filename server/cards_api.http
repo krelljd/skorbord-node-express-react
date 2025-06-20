@@ -1,0 +1,147 @@
+### List all games
+GET http://localhost:3000/api/cards/games
+Accept: application/json
+
+### Create a new game
+POST http://localhost:3000/api/cards/games
+Content-Type: application/json
+{
+  "name": "Test Game",
+  "game_type": "Hearts",
+  "target_score": 100,
+  "notes": "Friendly match"
+}
+
+### Get game details
+GET http://localhost:3000/api/cards/games/1
+Accept: application/json
+
+### Update game
+PUT http://localhost:3000/api/cards/games/1
+Content-Type: application/json
+{
+  "name": "Updated Game Name",
+  "is_active": true
+}
+
+### Delete a game
+DELETE http://localhost:3000/api/cards/games/1
+
+### List players in a game
+GET http://localhost:3000/api/cards/games/1/players
+Accept: application/json
+
+### Add a player to a game
+POST http://localhost:3000/api/cards/games/1/players
+Content-Type: application/json
+{
+  "name": "Alice",
+  "avatar": "avatar1.png",
+  "color": "#FF0000",
+  "position": 1
+}
+
+### Update player
+PUT http://localhost:3000/api/cards/players/1
+Content-Type: application/json
+{
+  "name": "Alice Updated",
+  "color": "#00FF00"
+}
+
+### Remove a player
+DELETE http://localhost:3000/api/cards/players/1
+
+### List rounds for a game
+GET http://localhost:3000/api/cards/games/1/rounds
+Accept: application/json
+
+### Add a new round
+POST http://localhost:3000/api/cards/games/1/rounds
+Content-Type: application/json
+{
+  "round_number": 1
+}
+
+### Get scores for a round
+GET http://localhost:3000/api/cards/rounds/1/scores
+Accept: application/json
+
+### Add or update scores for a round
+POST http://localhost:3000/api/cards/rounds/1/scores
+Content-Type: application/json
+{
+  "scores": [
+    { "player_id": 1, "score": 10 },
+    { "player_id": 2, "score": 5 }
+  ]
+}
+
+### Edit a score
+PUT http://localhost:3000/api/cards/scores/1
+Content-Type: application/json
+{
+  "score": 15
+}
+
+### Undo/delete a score
+DELETE http://localhost:3000/api/cards/scores/1
+
+### List rivalry groups in a game
+GET http://localhost:3000/api/cards/games/1/rivalries
+Accept: application/json
+
+### Create a rivalry group (multi-player/team)
+POST http://localhost:3000/api/cards/games/1/rivalries
+Content-Type: application/json
+{
+  "name": "Team A vs Team B",
+  "notes": "Championship Rivalry",
+  "players": [
+    { "player_id": 1, "team_number": 1 },
+    { "player_id": 2, "team_number": 1 },
+    { "player_id": 3, "team_number": 2 },
+    { "player_id": 4, "team_number": 2 }
+  ]
+}
+
+### Get rivalry group details
+GET http://localhost:3000/api/cards/rivalries/1
+Accept: application/json
+
+### Update rivalry group
+PUT http://localhost:3000/api/cards/rivalries/1
+Content-Type: application/json
+{
+  "name": "Updated Rivalry Name",
+  "notes": "Updated notes"
+}
+
+### Remove a rivalry group
+DELETE http://localhost:3000/api/cards/rivalries/1
+
+### List players in a rivalry group
+GET http://localhost:3000/api/cards/rivalries/1/players
+Accept: application/json
+
+### Add players to a rivalry group
+POST http://localhost:3000/api/cards/rivalries/1/players
+Content-Type: application/json
+{
+  "players": [
+    { "player_id": 5, "team_number": 1 },
+    { "player_id": 6, "team_number": 2 }
+  ]
+}
+
+### Get rivalry group stats
+GET http://localhost:3000/api/cards/rivalries/1/stats
+Accept: application/json
+
+### Get game history
+GET http://localhost:3000/api/cards/games/1/history
+Accept: application/json
+
+### Export game results
+GET http://localhost:3000/api/cards/games/1/export
+Accept: application/json
