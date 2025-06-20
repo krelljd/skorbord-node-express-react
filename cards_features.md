@@ -33,6 +33,13 @@
 - Simple, intuitive controls for adding scores and managing players.
 - Visual indicators for current leader, last round winner, etc.
 
+## User/Session Discrimination with Sqids
+- All games and rivalries are associated with a unique Sqid (short, unique, non-sequential ID).
+- Sqid acts as a discriminator, allowing different users to track their own games and rivalries without accounts or authentication.
+- All API operations require a Sqid parameter to scope data to the correct user/session.
+- Sqids are generated using the app's existing Sqids implementation and settings.
+- Users access their scoreboard via a unique Sqid-based URL.
+
 ## Sharing & Export
 - Share game results or rivalry stats via link or export (CSV, image, etc.).
 

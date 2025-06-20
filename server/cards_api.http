@@ -3,7 +3,7 @@
 @host = {{devHost}}
 
 ### List all games
-GET {{host}}/games
+GET {{host}}/games?sqid=abc123
 Accept: application/json
 
 ### Create a new game
@@ -13,30 +13,32 @@ Content-Type: application/json
   "name": "Test Game",
   "game_type": "Hearts",
   "target_score": 100,
-  "notes": "Friendly match"
+  "notes": "Friendly match",
+  "sqid": "abc123"
 }
 
 ### Get game details
-GET {{host}}/games/1
+GET {{host}}/games/1?sqid=abc123
 Accept: application/json
 
 ### Update game
-PUT {{host}}/games/1
+PUT {{host}}/games/1?sqid=abc123
 Content-Type: application/json
 {
   "name": "Updated Game Name",
-  "is_active": true
+  "is_active": true,
+  "sqid": "abc123"
 }
 
 ### Delete a game
-DELETE {{host}}/games/1
+DELETE {{host}}/games/1?sqid=abc123
 
 ### List players in a game
-GET {{host}}/games/1/players
+GET {{host}}/games/1/players?sqid=abc123
 Accept: application/json
 
 ### Add a player to a game
-POST {{host}}/games/1/players
+POST {{host}}/games/1/players?sqid=abc123
 Content-Type: application/json
 {
   "name": "Alice",
@@ -46,7 +48,7 @@ Content-Type: application/json
 }
 
 ### Update player
-PUT {{host}}/players/1
+PUT {{host}}/players/1?sqid=abc123
 Content-Type: application/json
 {
   "name": "Alice Updated",
@@ -54,25 +56,25 @@ Content-Type: application/json
 }
 
 ### Remove a player
-DELETE {{host}}/players/1
+DELETE {{host}}/players/1?sqid=abc123
 
 ### List rounds for a game
-GET {{host}}/games/1/rounds
+GET {{host}}/games/1/rounds?sqid=abc123
 Accept: application/json
 
 ### Add a new round
-POST {{host}}/games/1/rounds
+POST {{host}}/games/1/rounds?sqid=abc123
 Content-Type: application/json
 {
   "round_number": 1
 }
 
 ### Get scores for a round
-GET {{host}}/rounds/1/scores
+GET {{host}}/rounds/1/scores?sqid=abc123
 Accept: application/json
 
 ### Add or update scores for a round
-POST {{host}}/rounds/1/scores
+POST {{host}}/rounds/1/scores?sqid=abc123
 Content-Type: application/json
 {
   "scores": [
@@ -82,25 +84,27 @@ Content-Type: application/json
 }
 
 ### Edit a score
-PUT {{host}}/scores/1
+PUT {{host}}/scores/1?sqid=abc123
 Content-Type: application/json
 {
   "score": 15
 }
 
 ### Undo/delete a score
-DELETE {{host}}/scores/1
+DELETE {{host}}/scores/1?sqid=abc123
 
-### List rivalry groups in a game
-GET {{host}}/games/1/rivalries
+### List rivalry groups
+GET {{host}}/rivalries?sqid=abc123
 Accept: application/json
 
 ### Create a rivalry group (multi-player/team)
-POST {{host}}/games/1/rivalries
+POST {{host}}/rivalries
 Content-Type: application/json
 {
   "name": "Team A vs Team B",
   "notes": "Championship Rivalry",
+  "game_type": "Hearts",
+  "sqid": "abc123",
   "players": [
     { "player_id": 1, "team_number": 1 },
     { "player_id": 2, "team_number": 1 },
@@ -110,11 +114,11 @@ Content-Type: application/json
 }
 
 ### Get rivalry group details
-GET {{host}}/rivalries/1
+GET {{host}}/rivalries/1?sqid=abc123
 Accept: application/json
 
 ### Update rivalry group
-PUT {{host}}/rivalries/1
+PUT {{host}}/rivalries/1?sqid=abc123
 Content-Type: application/json
 {
   "name": "Updated Rivalry Name",
@@ -122,14 +126,14 @@ Content-Type: application/json
 }
 
 ### Remove a rivalry group
-DELETE {{host}}/rivalries/1
+DELETE {{host}}/rivalries/1?sqid=abc123
 
 ### List players in a rivalry group
-GET {{host}}/rivalries/1/players
+GET {{host}}/rivalries/1/players?sqid=abc123
 Accept: application/json
 
 ### Add players to a rivalry group
-POST {{host}}/rivalries/1/players
+POST {{host}}/rivalries/1/players?sqid=abc123
 Content-Type: application/json
 {
   "players": [
@@ -139,13 +143,13 @@ Content-Type: application/json
 }
 
 ### Get rivalry group stats
-GET {{host}}/rivalries/1/stats
+GET {{host}}/rivalries/1/stats?sqid=abc123
 Accept: application/json
 
 ### Get game history
-GET {{host}}/games/1/history
+GET {{host}}/games/1/history?sqid=abc123
 Accept: application/json
 
 ### Export game results
-GET {{host}}/games/1/export
+GET {{host}}/games/1/export?sqid=abc123
 Accept: application/json

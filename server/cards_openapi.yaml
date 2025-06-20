@@ -11,6 +11,8 @@ paths:
   /games:
     get:
       summary: List all games
+      parameters:
+        - $ref: '#/components/parameters/sqid'
       responses:
         '200':
           description: List of games
@@ -36,6 +38,7 @@ paths:
       summary: Get game details
       parameters:
         - $ref: '#/components/parameters/gameId'
+        - $ref: '#/components/parameters/sqid'
       responses:
         '200':
           description: Game details
@@ -47,6 +50,7 @@ paths:
       summary: Update game
       parameters:
         - $ref: '#/components/parameters/gameId'
+        - $ref: '#/components/parameters/sqid'
       requestBody:
         required: true
         content:
@@ -66,6 +70,7 @@ paths:
       summary: Delete a game
       parameters:
         - $ref: '#/components/parameters/gameId'
+        - $ref: '#/components/parameters/sqid'
       responses:
         '204':
           description: Game deleted
@@ -78,6 +83,7 @@ paths:
       summary: List players in a game
       parameters:
         - $ref: '#/components/parameters/gameId'
+        - $ref: '#/components/parameters/sqid'
       responses:
         '200':
           description: List of players
@@ -89,6 +95,7 @@ paths:
       summary: Add a player to a game
       parameters:
         - $ref: '#/components/parameters/gameId'
+        - $ref: '#/components/parameters/sqid'
       requestBody:
         required: true
         content:
@@ -237,7 +244,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [game_type, name]
+              required: [game_type, name, sqid]
               properties:
                 game_type:
                   type: string
@@ -247,6 +254,8 @@ paths:
                 name:
                   type: string
                 notes:
+                  type: string
+                sqid:
                   type: string
       responses:
         '201':
@@ -267,6 +276,7 @@ paths:
           schema:
             type: integer
             nullable: true
+        - $ref: '#/components/parameters/sqid'
       responses:
         '200':
           description: List of rivalries
@@ -324,10 +334,17 @@ components:
       required: true
       schema:
         type: integer
+    sqid:
+      name: sqid
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Unique Sqid discriminator for user/session
   schemas:
     GameCreate:
       type: object
-      required: [name]
+      required: [name, sqid]
       properties:
         name:
           type: string
@@ -336,6 +353,8 @@ components:
         target_score:
           type: integer
         notes:
+          type: string
+        sqid:
           type: string
     GameUpdate:
       type: object
@@ -350,6 +369,8 @@ components:
           type: string
         is_active:
           type: boolean
+        sqid:
+          type: string
     PlayerCreate:
       type: object
       required: [name]
@@ -411,6 +432,8 @@ components:
         name:
           type: string
         notes:
+          type: string
+        sqid:
           type: string
     RivalryPlayer:
       type: object

@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS games (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     target_score INTEGER,
     notes TEXT,
-    is_active BOOLEAN
+    is_active BOOLEAN,
+    sqid TEXT NOT NULL -- Sqid discriminator for user/session
 );
 
 CREATE TABLE IF NOT EXISTS players (
@@ -44,7 +45,8 @@ CREATE TABLE IF NOT EXISTS rivalries (
     game_type TEXT NOT NULL, -- e.g., 'volleyball'
     group_id INTEGER,        -- optional, if you support groups
     name TEXT NOT NULL,      -- Name or label for the rivalry group
-    notes TEXT
+    notes TEXT,
+    sqid TEXT NOT NULL       -- Sqid discriminator for user/session
     -- No game_id here; rivalry is for all games of this type/group
 );
 
