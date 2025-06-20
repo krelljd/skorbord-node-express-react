@@ -228,146 +228,70 @@ paths:
           description: Score not found
         '500':
           description: Server/database error
-  /games/{gameId}/rivalries:
-    get:
-      summary: List rivalry groups in a game
-      parameters:
-        - $ref: '#/components/parameters/gameId'
-      responses:
-        '200':
-          description: List of rivalry groups
-        '404':
-          description: Game not found
-        '500':
-          description: Server/database error
+  /rivalries:
     post:
-      summary: Define a rivalry group
-      parameters:
-        - $ref: '#/components/parameters/gameId'
+      summary: Create a new rivalry
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RivalryGroupCreate'
+              type: object
+              required: [game_type, name]
+              properties:
+                game_type:
+                  type: string
+                group_id:
+                  type: integer
+                  nullable: true
+                name:
+                  type: string
+                notes:
+                  type: string
       responses:
         '201':
-          description: Rivalry group created
-        '400':
-          description: Invalid input or rivalry already exists
-        '404':
-          description: Game or player not found
-        '500':
-          description: Server/database error
-  /rivalries/{rivalryId}:
+          description: Rivalry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rivalry'
     get:
-      summary: Get rivalry group details
+      summary: List rivalries
       parameters:
-        - $ref: '#/components/parameters/rivalryId'
+        - in: query
+          name: game_type
+          schema:
+            type: string
+        - in: query
+          name: group_id
+          schema:
+            type: integer
+            nullable: true
       responses:
         '200':
-          description: Rivalry group details
-        '404':
-          description: Rivalry group not found
-        '500':
-          description: Server/database error
-    put:
-      summary: Update rivalry group
-      parameters:
-        - $ref: '#/components/parameters/rivalryId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RivalryGroupUpdate'
-      responses:
-        '200':
-          description: Rivalry group updated
-        '400':
-          description: Invalid input
-        '404':
-          description: Rivalry group not found
-        '500':
-          description: Server/database error
-    delete:
-      summary: Remove a rivalry group
-      parameters:
-        - $ref: '#/components/parameters/rivalryId'
-      responses:
-        '204':
-          description: Rivalry group deleted
-        '404':
-          description: Rivalry group not found
-        '500':
-          description: Server/database error
-  /rivalries/{rivalryId}/players:
-    get:
-      summary: List players in a rivalry group
-      parameters:
-        - $ref: '#/components/parameters/rivalryId'
-      responses:
-        '200':
-          description: List of players and their team assignments
-        '404':
-          description: Rivalry group not found
-        '500':
-          description: Server/database error
-    post:
-      summary: Add players to a rivalry group
-      parameters:
-        - $ref: '#/components/parameters/rivalryId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RivalryPlayersAdd'
-      responses:
-        '201':
-          description: Players added to rivalry group
-        '400':
-          description: Invalid input or player already in group
-        '404':
-          description: Rivalry group or player not found
-        '500':
-          description: Server/database error
+          description: List of rivalries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rivalry'
   /rivalries/{rivalryId}/stats:
     get:
-      summary: Get rivalry group stats
+      summary: Get rivalry stats
       parameters:
-        - $ref: '#/components/parameters/rivalryId'
+        - in: path
+          name: rivalryId
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
-          description: Rivalry group stats
-        '404':
-          description: Rivalry group not found
-        '500':
-          description: Server/database error
-  /games/{gameId}/history:
-    get:
-      summary: Get game history (rounds, scores, players)
-      parameters:
-        - $ref: '#/components/parameters/gameId'
-      responses:
-        '200':
-          description: Game history
-        '404':
-          description: Game not found
-        '500':
-          description: Server/database error
-  /games/{gameId}/export:
-    get:
-      summary: Export game results (CSV, JSON, etc.)
-      parameters:
-        - $ref: '#/components/parameters/gameId'
-      responses:
-        '200':
-          description: Exported data
-        '404':
-          description: Game not found
-        '500':
-          description: Server/database error
+          description: Rivalry stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RivaltyStats'
 components:
   parameters:
     gameId:
@@ -473,48 +397,39 @@ components:
       properties:
         score:
           type: integer
-    RivalryGroupCreate:
+    Rivalry:
       type: object
-      required: [name, players]
       properties:
+        id:
+          type: integer
+        game_type:
+          type: string
+          example: volleyball
+        group_id:
+          type: integer
+          nullable: true
         name:
           type: string
         notes:
           type: string
-        players:
-          type: array
-          items:
-            type: object
-            required: [player_id, team_number]
-            properties:
-              player_id:
-                type: integer
-              team_number:
-                type: integer
-    RivalryGroupUpdate:
+    RivalryPlayer:
       type: object
       properties:
-        name:
-          type: string
-        notes:
-          type: string
-    RivalryPlayersAdd:
-      type: object
-      required: [players]
-      properties:
-        players:
-          type: array
-          items:
-            type: object
-            required: [player_id, team_number]
-            properties:
-              player_id:
-                type: integer
-              team_number:
-                type: integer
+        id:
+          type: integer
+        rivalry_id:
+          type: integer
+        player_id:
+          type: integer
+        team_number:
+          type: integer
     RivaltyStats:
       type: object
       properties:
+        id:
+          type: integer
+        rivalry_id:
+          type: integer
         wins_team1:
           type: integer
         wins_team2:
@@ -523,3 +438,4 @@ components:
           type: integer
         avg_margin:
           type: number
+          format: float

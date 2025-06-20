@@ -41,27 +41,29 @@ CREATE TABLE IF NOT EXISTS scores (
 
 CREATE TABLE IF NOT EXISTS rivalries (
     id INTEGER PRIMARY KEY,
-    game_id INTEGER NOT NULL,
-    name TEXT, -- Name or label for the rivalry group
-    notes TEXT,
-    FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+    game_type TEXT NOT NULL, -- e.g., 'volleyball'
+    group_id INTEGER,        -- optional, if you support groups
+    name TEXT NOT NULL,      -- Name or label for the rivalry group
+    notes TEXT
+    -- No game_id here; rivalry is for all games of this type/group
 );
 
 CREATE TABLE IF NOT EXISTS rivalry_players (
     id INTEGER PRIMARY KEY,
     rivalry_id INTEGER NOT NULL,
     player_id INTEGER NOT NULL,
-    team_number INTEGER, -- To support team-based or multi-player rivalries
+    team_number INTEGER NOT NULL, -- To support team-based or multi-player rivalries
     FOREIGN KEY (rivalry_id) REFERENCES rivalries(id) ON DELETE CASCADE,
-    FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+    FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
+    UNIQUE(rivalry_id, player_id)
 );
 
 CREATE TABLE IF NOT EXISTS rivalry_stats (
     id INTEGER PRIMARY KEY,
     rivalry_id INTEGER NOT NULL,
-    wins_team1 INTEGER,
-    wins_team2 INTEGER,
-    total_games INTEGER,
-    avg_margin REAL,
+    wins_team1 INTEGER DEFAULT 0,
+    wins_team2 INTEGER DEFAULT 0,
+    total_games INTEGER DEFAULT 0,
+    avg_margin REAL DEFAULT 0,
     FOREIGN KEY (rivalry_id) REFERENCES rivalries(id) ON DELETE CASCADE
 );

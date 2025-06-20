@@ -90,3 +90,23 @@
 - wins_team2 (INTEGER)
 - total_games (INTEGER)
 - avg_margin (REAL)
+
+---
+
+## Card Game Scoreboard App - Features
+
+## Rivalries (Updated)
+- Rivalries are tracked across all games of a certain `game_type` (e.g., all volleyball games) and optionally by `group_id` (if groups are supported).
+- Each rivalry is defined by a unique combination of `game_type`, optional `group_id`, and a rivalry `name`.
+- Rivalry stats (wins, total games, average margin, etc.) are aggregated across all games matching the rivalry's `game_type` and `group_id`.
+- Players are assigned to rivalries via the `rivalry_players` table, supporting team-based or multi-player rivalries.
+- Rivalry stats are updated whenever a relevant game is completed.
+- Rivalries are not tied to a single game instance, but span all games of the specified type/group.
+
+## Other Features (Unchanged)
+- Player Management
+- Score Tracking
+- Game Management
+- Customization
+- User Experience
+- Sharing & Export

@@ -1,9 +1,13 @@
+@devHost = http://localhost:3000/api/cards
+@prodHost = https://skorbord.app/api/cards
+@host = {{devHost}}
+
 ### List all games
-GET http://localhost:3000/api/cards/games
+GET {{host}}/games
 Accept: application/json
 
 ### Create a new game
-POST http://localhost:3000/api/cards/games
+POST {{host}}/games
 Content-Type: application/json
 {
   "name": "Test Game",
@@ -13,11 +17,11 @@ Content-Type: application/json
 }
 
 ### Get game details
-GET http://localhost:3000/api/cards/games/1
+GET {{host}}/games/1
 Accept: application/json
 
 ### Update game
-PUT http://localhost:3000/api/cards/games/1
+PUT {{host}}/games/1
 Content-Type: application/json
 {
   "name": "Updated Game Name",
@@ -25,14 +29,14 @@ Content-Type: application/json
 }
 
 ### Delete a game
-DELETE http://localhost:3000/api/cards/games/1
+DELETE {{host}}/games/1
 
 ### List players in a game
-GET http://localhost:3000/api/cards/games/1/players
+GET {{host}}/games/1/players
 Accept: application/json
 
 ### Add a player to a game
-POST http://localhost:3000/api/cards/games/1/players
+POST {{host}}/games/1/players
 Content-Type: application/json
 {
   "name": "Alice",
@@ -42,7 +46,7 @@ Content-Type: application/json
 }
 
 ### Update player
-PUT http://localhost:3000/api/cards/players/1
+PUT {{host}}/players/1
 Content-Type: application/json
 {
   "name": "Alice Updated",
@@ -50,25 +54,25 @@ Content-Type: application/json
 }
 
 ### Remove a player
-DELETE http://localhost:3000/api/cards/players/1
+DELETE {{host}}/players/1
 
 ### List rounds for a game
-GET http://localhost:3000/api/cards/games/1/rounds
+GET {{host}}/games/1/rounds
 Accept: application/json
 
 ### Add a new round
-POST http://localhost:3000/api/cards/games/1/rounds
+POST {{host}}/games/1/rounds
 Content-Type: application/json
 {
   "round_number": 1
 }
 
 ### Get scores for a round
-GET http://localhost:3000/api/cards/rounds/1/scores
+GET {{host}}/rounds/1/scores
 Accept: application/json
 
 ### Add or update scores for a round
-POST http://localhost:3000/api/cards/rounds/1/scores
+POST {{host}}/rounds/1/scores
 Content-Type: application/json
 {
   "scores": [
@@ -78,21 +82,21 @@ Content-Type: application/json
 }
 
 ### Edit a score
-PUT http://localhost:3000/api/cards/scores/1
+PUT {{host}}/scores/1
 Content-Type: application/json
 {
   "score": 15
 }
 
 ### Undo/delete a score
-DELETE http://localhost:3000/api/cards/scores/1
+DELETE {{host}}/scores/1
 
 ### List rivalry groups in a game
-GET http://localhost:3000/api/cards/games/1/rivalries
+GET {{host}}/games/1/rivalries
 Accept: application/json
 
 ### Create a rivalry group (multi-player/team)
-POST http://localhost:3000/api/cards/games/1/rivalries
+POST {{host}}/games/1/rivalries
 Content-Type: application/json
 {
   "name": "Team A vs Team B",
@@ -106,11 +110,11 @@ Content-Type: application/json
 }
 
 ### Get rivalry group details
-GET http://localhost:3000/api/cards/rivalries/1
+GET {{host}}/rivalries/1
 Accept: application/json
 
 ### Update rivalry group
-PUT http://localhost:3000/api/cards/rivalries/1
+PUT {{host}}/rivalries/1
 Content-Type: application/json
 {
   "name": "Updated Rivalry Name",
@@ -118,14 +122,14 @@ Content-Type: application/json
 }
 
 ### Remove a rivalry group
-DELETE http://localhost:3000/api/cards/rivalries/1
+DELETE {{host}}/rivalries/1
 
 ### List players in a rivalry group
-GET http://localhost:3000/api/cards/rivalries/1/players
+GET {{host}}/rivalries/1/players
 Accept: application/json
 
 ### Add players to a rivalry group
-POST http://localhost:3000/api/cards/rivalries/1/players
+POST {{host}}/rivalries/1/players
 Content-Type: application/json
 {
   "players": [
@@ -135,13 +139,13 @@ Content-Type: application/json
 }
 
 ### Get rivalry group stats
-GET http://localhost:3000/api/cards/rivalries/1/stats
+GET {{host}}/rivalries/1/stats
 Accept: application/json
 
 ### Get game history
-GET http://localhost:3000/api/cards/games/1/history
+GET {{host}}/games/1/history
 Accept: application/json
 
 ### Export game results
-GET http://localhost:3000/api/cards/games/1/export
+GET {{host}}/games/1/export
 Accept: application/json
