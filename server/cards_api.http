@@ -19,7 +19,8 @@ Content-Type: application/json
   "name": "Test Game",
   "game_type": "Golf",
   "target_score": 100,
-  "notes": "Friendly match"
+  "notes": "Friendly match",
+  "is_active": 1
 }
 
 ### Get game details
