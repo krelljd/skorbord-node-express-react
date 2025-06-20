@@ -10,9 +10,10 @@ Accept: application/json
 ### Create a new game
 POST {{host}}/{{sqid}}/games
 Content-Type: application/json
+
 {
   "name": "Test Game",
-  "game_type": "Hearts",
+  "game_type": "Golf",
   "target_score": 100,
   "notes": "Friendly match"
 }
@@ -24,9 +25,18 @@ Accept: application/json
 ### Update game
 PUT {{host}}/{{sqid}}/games/1
 Content-Type: application/json
+
 {
   "name": "Updated Game Name",
   "is_active": true
+}
+
+### Partially update game
+PATCH {{host}}/{{sqid}}/games/1
+Content-Type: application/json
+
+{
+  "name": "Updated Game Name"
 }
 
 ### Delete a game
@@ -39,6 +49,7 @@ Accept: application/json
 ### Add a player to a game
 POST {{host}}/{{sqid}}/games/1/players
 Content-Type: application/json
+
 {
   "name": "Alice",
   "color": "#FF0000",
@@ -48,8 +59,17 @@ Content-Type: application/json
 ### Update player
 PUT {{host}}/{{sqid}}/players/1
 Content-Type: application/json
+
 {
   "name": "Alice Updated",
+  "color": "#00FF00"
+}
+
+### Partially update player
+PATCH {{host}}/{{sqid}}/players/1
+Content-Type: application/json
+
+{
   "color": "#00FF00"
 }
 
@@ -63,6 +83,7 @@ Accept: application/json
 ### Add a new round
 POST {{host}}/{{sqid}}/games/1/rounds
 Content-Type: application/json
+
 {
   "round_number": 1
 }
@@ -74,6 +95,7 @@ Accept: application/json
 ### Add or update scores for a round
 POST {{host}}/{{sqid}}/rounds/1/scores
 Content-Type: application/json
+
 {
   "scores": [
     { "player_id": 1, "score": 10 },
@@ -84,6 +106,15 @@ Content-Type: application/json
 ### Edit a score
 PUT {{host}}/{{sqid}}/scores/1
 Content-Type: application/json
+
+{
+  "score": 15
+}
+
+### Partially update score
+PATCH {{host}}/{{sqid}}/scores/1
+Content-Type: application/json
+
 {
   "score": 15
 }
@@ -98,6 +129,7 @@ Accept: application/json
 ### Create a rivalry group (multi-player/team)
 POST {{host}}/{{sqid}}/rivalries
 Content-Type: application/json
+
 {
   "name": "Team A vs Team B",
   "notes": "Championship Rivalry",
@@ -117,6 +149,7 @@ Accept: application/json
 ### Update rivalry group
 PUT {{host}}/{{sqid}}/rivalries/1
 Content-Type: application/json
+
 {
   "name": "Updated Rivalry Name",
   "notes": "Updated notes"
@@ -132,6 +165,7 @@ Accept: application/json
 ### Add players to a rivalry group
 POST {{host}}/{{sqid}}/rivalries/1/players
 Content-Type: application/json
+
 {
   "players": [
     { "player_id": 5, "team_number": 1 },

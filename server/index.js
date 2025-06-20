@@ -326,6 +326,30 @@ app.put('/api/cards/:sqid/games/:gameId', (req, res) => {
   );
 });
 
+// PATCH: Partially update a game (only provided fields)
+app.patch('/api/cards/:sqid/games/:gameId', (req, res) => {
+  const { sqid, gameId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  // Only allow updatable fields
+  const allowed = ['name', 'game_type', 'target_score', 'notes', 'is_active'];
+  const updates = [];
+  const params = [];
+  for (const key of allowed) {
+    if (key in req.body) {
+      updates.push(`${key} = ?`);
+      params.push(req.body[key]);
+    }
+  }
+  if (updates.length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+  params.push(gameId, sqid);
+  const sql = `UPDATE games SET ${updates.join(', ')} WHERE id = ? AND sqid = ?`;
+  db.run(sql, params, function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Game not found' });
+    res.json({ success: true });
+  });
+});
+
 app.delete('/api/cards/:sqid/games/:gameId', (req, res) => {
   const { sqid, gameId } = req.params;
   if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
@@ -371,6 +395,30 @@ app.put('/api/cards/:sqid/players/:playerId', (req, res) => {
       res.json({ success: true });
     }
   );
+});
+
+// PATCH: Partially update a player (only provided fields)
+app.patch('/api/cards/:sqid/players/:playerId', (req, res) => {
+  const { sqid, playerId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  // Only allow updatable fields
+  const allowed = ['name', 'color', 'position'];
+  const updates = [];
+  const params = [];
+  for (const key of allowed) {
+    if (key in req.body) {
+      updates.push(`${key} = ?`);
+      params.push(req.body[key]);
+    }
+  }
+  if (updates.length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+  params.push(playerId, sqid);
+  const sql = `UPDATE players SET ${updates.join(', ')} WHERE id = ? AND game_id IN (SELECT id FROM games WHERE sqid = ?)`;
+  db.run(sql, params, function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Player not found' });
+    res.json({ success: true });
+  });
 });
 app.delete('/api/cards/:sqid/players/:playerId', (req, res) => {
   const { sqid, playerId } = req.params;
@@ -458,6 +506,30 @@ app.delete('/api/cards/:sqid/scores/:scoreId', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     if (this.changes === 0) return res.status(404).json({ error: 'Score not found' });
     res.status(204).end();
+  });
+});
+
+// PATCH: Partially update a score (only provided fields)
+app.patch('/api/cards/:sqid/scores/:scoreId', (req, res) => {
+  const { sqid, scoreId } = req.params;
+  if (!isValidSqid(sqid)) return res.status(400).json({ error: 'Missing or invalid sqid' });
+  // Only allow updatable fields
+  const allowed = ['score'];
+  const updates = [];
+  const params = [];
+  for (const key of allowed) {
+    if (key in req.body) {
+      updates.push(`${key} = ?`);
+      params.push(req.body[key]);
+    }
+  }
+  if (updates.length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+  params.push(scoreId, sqid);
+  const sql = `UPDATE scores SET ${updates.join(', ')} WHERE id = ? AND round_id IN (SELECT id FROM rounds WHERE game_id IN (SELECT id FROM games WHERE sqid = ?))`;
+  db.run(sql, params, function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Score not found' });
+    res.json({ success: true });
   });
 });
 

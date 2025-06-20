@@ -51,7 +51,27 @@ paths:
         '500':
           description: Server/database error
     put:
-      summary: Update game (must match sqid)
+      summary: Update game (must match sqid, full replace)
+      parameters:
+        - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/gameId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameUpdate'
+      responses:
+        '200':
+          description: Game updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Game not found
+        '500':
+          description: Server/database error
+    patch:
+      summary: Partially update game (only provided fields)
       parameters:
         - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/gameId'
@@ -117,7 +137,27 @@ paths:
           description: Server/database error
   /{sqid}/players/{playerId}:
     put:
-      summary: Update player
+      summary: Update player (full replace)
+      parameters:
+        - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/playerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerUpdate'
+      responses:
+        '200':
+          description: Player updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Player not found
+        '500':
+          description: Server/database error
+    patch:
+      summary: Partially update player (only provided fields)
       parameters:
         - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/playerId'
@@ -216,7 +256,27 @@ paths:
           description: Server/database error
   /{sqid}/scores/{scoreId}:
     put:
-      summary: Edit a score
+      summary: Update score (full replace)
+      parameters:
+        - $ref: '#/components/parameters/sqid'
+        - $ref: '#/components/parameters/scoreId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreUpdate'
+      responses:
+        '200':
+          description: Score updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Score not found
+        '500':
+          description: Server/database error
+    patch:
+      summary: Partially update score (only provided fields)
       parameters:
         - $ref: '#/components/parameters/sqid'
         - $ref: '#/components/parameters/scoreId'
